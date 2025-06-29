@@ -1,0 +1,122 @@
+.product-info {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.bg-custom-blue {
+    background-color: #1d3557;
+    height: 100vh;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 1.5rem;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.product-img-animate {
+    transition: transform 0.4s ease;
+}
+
+.product-img-animate:hover {
+    transform: scale(1.05);
+}
+
+.product-title-animate,
+.product-desc-animate,
+.price-animate,
+.add-cart-animate {
+    animation-duration: 0.8s;
+    animation-fill-mode: both;
+}
+
+.product-title-animate {
+    animation-name: fadeInDown;
+}
+
+.product-desc-animate {
+    animation-name: fadeInUp;
+}
+
+.price-animate {
+    animation-name: fadeIn;
+}
+
+.add-cart-animate {
+    animation-name: popIn;
+    animation-delay: 0.4s;
+}
+
+
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Responsive font-size adjustment for description */
+@media (max-width: 992px) {
+    .product-desc-animate {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-desc-animate {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-desc-animate {
+        font-size: 0.9rem;
+    }
+}

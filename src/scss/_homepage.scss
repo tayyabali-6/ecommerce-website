@@ -1,0 +1,161 @@
+.homepage-products-wrapper {
+    padding: 0 15px;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 12px;
+    transition: 0.3s ease;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.icon-group {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+}
+
+.icon-circle {
+    background-color: white;
+    padding: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-wrapper {
+    position: relative;
+    cursor: pointer;
+    background: #f7f7f7;
+    padding: 10px 50px;
+    border-radius: 10px;
+}
+
+.product-image {
+    height: 230px;
+    object-fit: contain;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+.add-to-cart-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 0 0 10px 10px;
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+}
+
+.image-wrapper:hover .add-to-cart-btn {
+    opacity: 1;
+}
+
+.product-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.price-text {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 15px;
+    margin: 4px 0;
+}
+
+/* Custom Swiper Arrows (rounded like your image) */
+.custom-swiper-btn {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 18px;
+    transition: 0.2s ease;
+    border: solid;
+}
+
+.custom-swiper-btn:hover {
+    background-color: #f8f8f8;
+}
+
+
+// catagry 
+
+.category-scroll-container {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+}
+
+.category-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.category-card {
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+    border: 2px solid #e65353;
+    background-color: #ffffff;
+    color: #e65353;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.category-card .icon {
+    font-size: 40px;
+    transition: color 0.3s ease;
+}
+
+.category-card .label {
+    font-size: 14px;
+    margin-top: 8px;
+    transition: color 0.3s ease;
+}
+
+.category-card:hover {
+    background-color: #e65353;
+    color: #fff;
+}
+
+.category-card:hover .icon,
+.category-card:hover .label {
+    color: white;
+}

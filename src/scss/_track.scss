@@ -1,0 +1,93 @@
+.product-box {
+    background: #fff;
+    border-radius: 12px;
+    transition: 0.3s ease;
+    overflow: hidden;
+    min-height: 330px;
+    position: relative;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.product-icons {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+}
+
+.icon-btn {
+    background: #fff;
+    padding: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-img-wrapper {
+    position: relative;
+    background: #f7f7f7;
+    padding: 10px 50px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.product-img {
+    height: 220px;
+    width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.add-cart-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    color: #fff;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    border-radius: 0 0 10px 10px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.product-img-wrapper:hover .add-cart-overlay {
+    opacity: 1;
+}
+
+.product-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.price {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.rating i {
+    color: gold;
+}
