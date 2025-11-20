@@ -1,57 +1,86 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { firestore } from "../../../config/firebase";
 import { message } from "antd";
-import { supabase } from "../../../config/supabase";
 
-const categoryList = ["fashion", "camera", "mobile", "laptop", "tech", "home", "books"];
+const categoryList = ["fashion", "camera", "mobile", "laptop", "tech", "home", "books", "electronics"];
 
 const AddProducts = () => {
   const [product, setProduct] = useState({
-    title: "",
+    name: "",
     price: "",
     category: "",
     description: "",
-    quantity: 1,
-    productImageUrl: "",
-    time: Timestamp.now(),
-    date: new Date().toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
+    image: "",
+    inStock: true
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
-  const uploadImage = async (file) => {
-    const filePath = `products/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage
-      .from("ecommerce-web")
-      .upload(filePath, file, { cacheControl: "3600", upsert: true });
+  const uploadImageToServer = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
 
-    if (error) {
-      console.error(error);
-      messageApi.error("Upload failed");
+    try {
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        return data.imageUrl;
+      } else {
+        messageApi.error("Image upload failed");
+        return null;
+      }
+    } catch (error) {
+      console.error("Image upload error:", error);
+      messageApi.error("Image upload failed");
       return null;
     }
-    return `https://xxtaccjhwfxgvhkuryvr.supabase.co/storage/v1/object/public/ecommerce-web/${filePath}`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const file = e.target.image.files[0];
-    if (!product.title || !product.price || !product.category || !product.description || !file) {
+    if (!product.name || !product.price || !product.category || !product.description || !file) {
       return messageApi.error("All fields are required including image");
     }
 
     setIsProcessing(true);
     try {
-      const imageUrl = await uploadImage(file);
+      // Upload image to server
+      const imageUrl = await uploadImageToServer(file);
       if (!imageUrl) return;
 
-      await addDoc(collection(firestore, "products"), { ...product, productImageUrl: imageUrl });
-      messageApi.success("Product added successfully");
-      navigate("/dashboard/admin/adminDashboard");
+      // Create product in MERN backend
+      const response = await fetch('http://localhost:5000/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: product.name,
+          price: parseFloat(product.price),
+          category: product.category,
+          description: product.description,
+          image: imageUrl,
+          inStock: product.inStock
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageApi.success("Product added successfully");
+        navigate("/dashboard/admin/adminDashboard");
+      } else {
+        messageApi.error(data.message || "Failed to add product");
+      }
     } catch (err) {
       console.error(err);
       messageApi.error("Failed to add product");
@@ -88,50 +117,84 @@ const AddProducts = () => {
             Add Product
           </h2>
 
-          <input
-            type="text"
-            placeholder="Title"
-            className="form-control mb-3"
-            value={product.title}
-            onChange={(e) => setProduct({ ...product, title: e.target.value })}
-            style={inputStyle}
-          />
+          <div className="mb-3">
+            <label className="form-label text-white">Product Name</label>
+            <input
+              type="text"
+              placeholder="Product Name"
+              className="form-control"
+              value={product.name}
+              onChange={(e) => setProduct({ ...product, name: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
 
-          <input
-            type="number"
-            placeholder="Price"
-            className="form-control mb-3"
-            value={product.price}
-            onChange={(e) => setProduct({ ...product, price: e.target.value })}
-            style={inputStyle}
-          />
+          <div className="mb-3">
+            <label className="form-label text-white">Price (Rs)</label>
+            <input
+              type="number"
+              placeholder="Price"
+              className="form-control"
+              value={product.price}
+              onChange={(e) => setProduct({ ...product, price: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
 
-          <input type="file" name="image" accept="image/*" className="form-control mb-3" style={inputStyle} />
+          <div className="mb-3">
+            <label className="form-label text-white">Product Image</label>
+            <input 
+              type="file" 
+              name="image" 
+              accept="image/*" 
+              className="form-control" 
+              style={inputStyle} 
+              required 
+            />
+          </div>
 
-          <select
-            className="form-select mb-3"
-            value={product.category}
-            onChange={(e) => setProduct({ ...product, category: e.target.value })}
-            style={inputStyle}
-          >
-            <option value="" disabled>Select Category</option>
-            {categoryList.map((item, i) => (
-              <option key={i} value={item}>{item}</option>
-            ))}
-          </select>
+          <div className="mb-3">
+            <label className="form-label text-white">Category</label>
+            <select
+              className="form-select"
+              value={product.category}
+              onChange={(e) => setProduct({ ...product, category: e.target.value })}
+              style={inputStyle}
+            >
+              <option value="" disabled>Select Category</option>
+              {categoryList.map((item, i) => (
+                <option key={i} value={item}>
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <textarea
-            rows="3"
-            placeholder="Description"
-            className="form-control mb-4"
-            value={product.description}
-            onChange={(e) => setProduct({ ...product, description: e.target.value })}
-            style={inputStyle}
-          ></textarea>
+          <div className="mb-3">
+            <label className="form-label text-white">Description</label>
+            <textarea
+              rows="4"
+              placeholder="Product Description"
+              className="form-control"
+              value={product.description}
+              onChange={(e) => setProduct({ ...product, description: e.target.value })}
+              style={inputStyle}
+            ></textarea>
+          </div>
+
+          <div className="mb-4 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={product.inStock}
+              onChange={(e) => setProduct({ ...product, inStock: e.target.checked })}
+            />
+            <label className="form-check-label text-white">In Stock</label>
+          </div>
 
           <button
             type="submit"
-            className="btn w-100 fw-bold"
+            className="btn w-100 fw-bold py-2"
             disabled={isProcessing}
             style={buttonStyle}
           >

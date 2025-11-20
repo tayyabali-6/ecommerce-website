@@ -1,8 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../../context/Auth";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { FaHeart, FaEye, FaStar } from "react-icons/fa";
+import { HeartOutlined, EyeOutlined, StarFilled, RightOutlined, LeftOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { Button, Card, Tag } from "antd";
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -14,76 +15,359 @@ const HomePageProducts = () => {
     navigate("/productinfo", { state: { product } });
   };
 
+  const handleViewAllProducts = () => {
+    navigate("/allproducts");
+  };
+
   return (
-    <div className="container p-0 mt-5">
-
-      <section className="container position-relative overflow-hidden">
+    <div className="container mt-5 px-2 px-md-3 px-lg-4">
+      {/* Flash Sales Section */}
+      <section className="position-relative overflow-hidden mb-4">
+        {/* Header */}
         <div className="d-flex align-items-center mb-4">
-          <div className="bg-danger" style={{ width: "4px", height: "24px", marginRight: "10px" }}></div>
-          <h4 className="text-danger m-0">Flash Sales</h4>
+          <div className="bg-danger" style={{ width: "4px", height: "24px", marginRight: "12px" }}></div>
+          <h4 className="text-danger m-0 fw-bold fs-5 fs-md-4">Flash Sales</h4>
         </div>
-        <div className="position-absolute top-0 mt-4 me-5 border end-0 z-3">
-          <div className="swiper-button-prev"></div>
-          <div className="swiper-button-next ms-2"></div>
-        </div>
-        <div className="container d-flex justify-content-center position-relative">
-          {/* Swiper Navigation Top Right */}
 
+        {/* Navigation Buttons */}
+        <div className="position-absolute top-0 end-0 z-3 d-none d-md-flex">
+          <Button 
+            className="swiper-button-prev me-2"
+            shape="circle"
+            size="small"
+            icon={<LeftOutlined />}
+            style={{
+              border: "1px solid #d9d9d9",
+              background: "white",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+            }}
+          />
+          <Button 
+            className="swiper-button-next"
+            shape="circle"
+            size="small"
+            icon={<RightOutlined />}
+            style={{
+              border: "1px solid #d9d9d9",
+              background: "white",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+            }}
+          />
+        </div>
+
+        {/* Products Slider */}
+        <div className="position-relative">
           <Swiper
             modules={[Navigation]}
             navigation={{
               nextEl: ".swiper-button-next",
               prevEl: ".swiper-button-prev",
             }}
-            spaceBetween={30}
-            slidesPerView={3.5}
+            spaceBetween={24}
+            slidesPerView={4}
             breakpoints={{
-              0: { slidesPerView: 1.2, spaceBetween: 15 },
-              576: { slidesPerView: 2, spaceBetween: 20 },
-              768: { slidesPerView: 2.5, spaceBetween: 25 },
-              992: { slidesPerView: 3.5, spaceBetween: 30 },
+              0: { 
+                slidesPerView: 1, 
+                spaceBetween: 16,
+                centeredSlides: true
+              },
+              576: { 
+                slidesPerView: 2, 
+                spaceBetween: 18 
+              },
+              768: { 
+                slidesPerView: 2.5, 
+                spaceBetween: 20 
+              },
+              992: { 
+                slidesPerView: 3.2, 
+                spaceBetween: 22 
+              },
+              1200: { 
+                slidesPerView: 4, 
+                spaceBetween: 24 
+              }
             }}
           >
             {getAllProduct.map((item, index) => {
-              const { productImageUrl, title, price } = item;
+              const { image, productImageUrl, name, title, price, discountPrice } = item;
+              const originalPrice = discountPrice ? price : null;
+              const displayPrice = discountPrice || price;
+              
               return (
-                <SwiperSlide key={index}>
-                  <div className="product-card text-center position-relative">
-                    <div className="discount-badge">-35%</div>
-                    <div className="icon-group">
-                      <div className="icon-circle"><FaHeart /></div>
-                      <div className="icon-circle" onClick={() => handlehomepageProduct(item)}>
-                        <FaEye />
+                <SwiperSlide key={item._id || index}>
+                  <Card
+                    className="product-card h-100 mx-auto"
+                    style={{
+                      border: "none",
+                      borderRadius: "16px",
+                      overflow: "hidden",
+                      transition: "all 0.4s ease",
+                      maxWidth: "320px",
+                      width: "100%",
+                      background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.08)"
+                    }}
+                    bodyStyle={{ 
+                      padding: "0",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
+                  >
+                    {/* Image Section */}
+                    <div 
+                      className="image-section position-relative"
+                      onClick={() => handlehomepageProduct(item)}
+                      style={{ 
+                        cursor: "pointer",
+                        height: "220px",
+                        overflow: "hidden",
+                        background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+                        position: "relative"
+                      }}
+                    >
+                      <img 
+                        src={image || productImageUrl} 
+                        alt={name || title} 
+                        className="product-image"
+                        style={{ 
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          transition: "all 0.4s ease",
+                          padding: "0px"
+                        }}
+                      />
+                      
+                      {/* Discount Badge */}
+                      <Tag
+                        color="#e63946"
+                        style={{
+                          position: "absolute",
+                          top: "12px",
+                          left: "12px",
+                          fontWeight: "bold",
+                          border: "none",
+                          fontSize: "12px",
+                          padding: "4px 8px",
+                          borderRadius: "12px"
+                        }}
+                      >
+                        -35%
+                      </Tag>
+
+                      {/* Action Icons */}
+                      <div 
+                        className="position-absolute d-flex flex-column gap-2"
+                        style={{ 
+                          top: "12px", 
+                          right: "12px" 
+                        }}
+                      >
+                        <Button
+                          type="text"
+                          icon={<HeartOutlined />}
+                          style={{
+                            background: "rgba(255,255,255,0.9)",
+                            borderRadius: "50%",
+                            width: "36px",
+                            height: "36px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                            backdropFilter: "blur(10px)",
+                            border: "none"
+                          }}
+                        />
+                        <Button
+                          type="text"
+                          icon={<EyeOutlined />}
+                          onClick={() => handlehomepageProduct(image || productImageUrl)}
+                          style={{
+                            background: "rgba(255,255,255,0.9)",
+                            borderRadius: "50%",
+                            width: "36px",
+                            height: "36px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                            backdropFilter: "blur(10px)",
+                            border: "none"
+                          }}
+                        />
+                      </div>
+
+                      {/* Hover Overlay */}
+                      <div 
+                        className="hover-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center"
+                        style={{
+                          top: 0,
+                          left: 0,
+                          background: "rgba(230, 57, 70, 0.9)",
+                          opacity: 0,
+                          transition: "all 0.3s ease"
+                        }}
+                      >
+                        <Button
+                          type="primary"
+                          icon={<ShoppingCartOutlined />}
+                          size="large"
+                          style={{
+                            background: "white",
+                            border: "none",
+                            color: "#e63946",
+                            borderRadius: "25px",
+                            padding: "12px 24px",
+                            fontWeight: "600",
+                            transform: "translateY(20px)",
+                            transition: "all 0.3s ease"
+                          }}
+                        >
+                          Quick View
+                        </Button>
                       </div>
                     </div>
-                    <div className="image-wrapper" onClick={() => handlehomepageProduct(item)}>
-                      <img src={productImageUrl} alt={title} className="product-image" />
-                      <div className="add-to-cart-btn">Add To Cart</div>
+
+                    {/* Product Info Section */}
+                    <div className="product-info p-4">
+                      <h6 
+                        className="product-name mb-2" 
+                        style={{ 
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          lineHeight: "1.4",
+                          color: "#2d3748",
+                          minHeight: "42px",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden"
+                        }}
+                      >
+                        {name || title}
+                      </h6>
+                      
+                      {/* Price Section */}
+                      <div className="price-section mb-3">
+                        <div 
+                          className="current-price fw-bold" 
+                          style={{ 
+                            fontSize: "18px", 
+                            color: "#e63946"
+                          }}
+                        >
+                          Rs {displayPrice}
+                        </div>
+                        {originalPrice && (
+                          <div 
+                            className="original-price text-muted text-decoration-line-through ms-2"
+                            style={{ fontSize: "14px" }}
+                          >
+                            Rs {originalPrice}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Rating and Add to Cart */}
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="rating d-flex align-items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <StarFilled 
+                              key={star} 
+                              style={{ 
+                                fontSize: "14px", 
+                                color: "#ffd700",
+                                marginRight: "2px"
+                              }} 
+                            />
+                          ))}
+                          <span 
+                            className="ms-1"
+                            style={{ 
+                              fontSize: "12px", 
+                              color: "#718096" 
+                            }}
+                          >
+                            (128)
+                          </span>
+                        </div>
+                        
+                        {/* <Button
+                        onClick={handleViewAllProducts}
+                          type="primary"
+                          icon={<ShoppingCartOutlined />}
+                          size="small"
+                          style={{
+                            background: "#e63946",
+                            border: "none",
+                            borderRadius: "20px",
+                            fontWeight: "500",
+                            fontSize: "12px",
+                            padding: "6px 16px"
+                          }}
+                        >
+                          Add
+                        </Button> */}
+                      </div>
                     </div>
-                    <h6 className="product-title mt-2 mb-1 text-start">
-                      {title.length > 40 ? title.slice(0, 40) + "..." : title}
-                    </h6>
-                    <div className="price-text text-start">${price}</div>
-                    <div className="mb-3 text-start">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <FaStar key={star} size={14} color="gold" className="me-1" />
-                      ))}
-                    </div>
-                  </div>
+                  </Card>
                 </SwiperSlide>
               );
             })}
           </Swiper>
         </div>
       </section>
-      <div className="allProduct text-center">
-        <button className="btn btn-danger mb-4 px-5 py-2 rounded-1" onClick={()=> navigate('/allproducts')}>
-          <Link to='/allProducts' className="text-reset text-decoration-none">
-            View All Products
-          </Link>
-        </button>
+
+      {/* View All Products Button */}
+      <div className="text-center my-5 py-3">
+        <Button
+          type="primary"
+          size="large"
+          onClick={handleViewAllProducts}
+          style={{
+            background: "linear-gradient(135deg, #e63946 0%, #d32f2f 100%)",
+            border: "none",
+            borderRadius: "12px",
+            padding: "16px 48px",
+            height: "auto",
+            fontWeight: "600",
+            fontSize: "16px",
+            boxShadow: "0 8px 25px rgba(230, 57, 70, 0.3)",
+            minWidth: "220px"
+          }}
+        >
+          View All Products
+        </Button>
       </div>
-      <hr />
+      
+      <hr className="my-4" />
+
+      {/* Hover Effects CSS */}
+      <style jsx>{`
+        .product-card:hover {
+          transform: translateY(-8px) !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+        }
+        
+        .image-section:hover .product-image {
+          transform: scale(1.08) !important;
+        }
+        
+        .image-section:hover .hover-overlay {
+          opacity: 1 !important;
+        }
+        
+        .image-section:hover .hover-overlay button {
+          transform: translateY(0) !important;
+        }
+        
+        @media (max-width: 576px) {
+          .product-card {
+            max-width: 280px !important;
+          }
+          
+          .image-section {
+            height: 200px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

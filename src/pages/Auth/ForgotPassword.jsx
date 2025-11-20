@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { auth } from '../../config/firebase';
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,18 +14,25 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email);
-      messageApi.success('If your email is registered, a reset link has been sent');
-      setTimeout(() => navigate('/auth/login'), 2000);
+      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageApi.success(data.message);
+        setTimeout(() => navigate('/auth/login'), 2000);
+      } else {
+        messageApi.error(data.message);
+      }
     } catch (error) {
       console.error(error);
-      if (error.code === 'auth/invalid-email') {
-        messageApi.error('Please enter a valid email address');
-      } else if (error.code === 'auth/user-not-found') {
-        messageApi.error('This email is not registered');
-      } else {
-        messageApi.error('Something went wrong, please try again');
-      }
+      messageApi.error('Something went wrong, please try again');
     } finally {
       setLoading(false);
     }

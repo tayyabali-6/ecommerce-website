@@ -1,26 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../../../config/firebase";
-import { FaEye, FaHeart, FaStar } from "react-icons/fa";
-import { useNavigate } from "react-router-dom"; // import navigation hook
-import Loader from "../../../Loader/isLoader";
+import { useNavigate } from "react-router-dom";
+import { EyeOutlined, HeartOutlined, StarFilled, FilterOutlined } from "@ant-design/icons";
+import { Button, Card, Row, Col, Select, Spin, Tag, message, Empty } from "antd";
+
+const { Option } = Select;
 
 const AllProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate(); // initialize navigation
+    const navigate = useNavigate();
 
     const fetchProducts = async () => {
         try {
-            const querySnapshot = await getDocs(collection(firestore, "products"));
-            const productList = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setProducts(productList);
+            const response = await fetch('http://localhost:5000/api/products');
+            const data = await response.json();
+
+            if (data.success) {
+                setProducts(data.products);
+            } else {
+                console.error("Error fetching products:", data.message);
+                message.error("Failed to load products");
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error fetching products:", error);
+            message.error("Failed to load products");
             setLoading(false);
         }
     };
@@ -29,74 +33,342 @@ const AllProducts = () => {
         fetchProducts();
     }, []);
 
-    const sortProducts = (type) => {
+    const handleSortChange = (value) => {
         const sorted = [...products];
-        if (type === "lowToHigh") {
+        if (value === "lowToHigh") {
             sorted.sort((a, b) => a.price - b.price);
-        } else if (type === "highToLow") {
+        } else if (value === "highToLow") {
             sorted.sort((a, b) => b.price - a.price);
         }
         setProducts(sorted);
     };
 
-    // ✅ handleProductClick: navigate to detail page with product ID
     const handleProductClick = (product) => {
         navigate("/productinfo", { state: { product } });
     };
 
+    const handleAddToCart = (product, e) => {
+        e.stopPropagation();
+        message.success(`${product.name || product.title} added to cart!`);
+        // Add your cart logic here
+    };
+
+    const handleAddToWishlist = (product, e) => {
+        e.stopPropagation();
+        message.success("Added to wishlist!");
+        // Add your wishlist logic here
+    };
+
     return (
-        <>
-            <div className="container my-5">
-                <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 border">
-                    <h2 className="fw-bold mb-3 mb-md-0 text-dark">🛒 All Products</h2>
-                    <div className="d-flex gap-2 flex-wrap">
-                        <button onClick={() => sortProducts("lowToHigh")} className="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
-                            Price Low-High
-                        </button>
-                        <button onClick={() => sortProducts("highToLow")} className="btn btn-dark rounded-pill px-4 fw-semibold">
-                            Price High-Low
-                        </button>
-                    </div>
-                </div>
+        <div style={{ background: "#f8f9fa", minHeight: "100vh" }}>
+            {/* Header Section */}
+            <div className="container pt-5">
+                <Card
+                    className="mb-4 border-0"
+                    style={{
+                        background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                        borderRadius: "16px"
+                    }}
+                >
+                    <Row align="middle" justify="space-between">
+                        <Col>
+                            <h1 style={{
+                                margin: 0,
+                                fontSize: "28px",
+                                fontWeight: "700",
+                                background: "linear-gradient(135deg, #e63946 0%, #d32f2f 100%)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent"
+                            }}>
+                                🛒 All Products
+                            </h1>
+                            <p style={{ margin: "8px 0 0 0", color: "#666", fontSize: "16px" }}>
+                                Discover our amazing collection
+                            </p>
+                        </Col>
+                        <Col>
+                            <Select
+                                defaultValue="featured"
+                                style={{ width: 200 }}
+                                onChange={handleSortChange}
+                                suffixIcon={<FilterOutlined />}
+                                size="large"
+                            >
+                                <Option value="featured">Featured</Option>
+                                <Option value="lowToHigh">Price: Low to High</Option>
+                                <Option value="highToLow">Price: High to Low</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+                </Card>
             </div>
 
-            <div className="container my-5">
+            {/* Products Grid */}
+            <div className="container pb-5">
                 {loading ? (
-                    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
-                        <div className="spinner-border text-danger" role="status" style={{ width: "4rem", height: "4rem" }}>
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "400px"
+                    }}>
+                        <Spin size="large" />
                     </div>
                 ) : products.length === 0 ? (
-                    <p className="text-center text-muted">No products found.</p>
+                    <Empty
+                        description="No products found"
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        style={{
+                            margin: "100px 0",
+                            color: "#666"
+                        }}
+                    />
                 ) : (
-                    <div className="row">
+                    <Row gutter={[24, 24]}>
                         {products.map((product, index) => (
-                            <div key={index} className="col-md-3 col-sm-6 mb-4">
-                                <div className="product-box position-relative">
-                                    <div className="discount-badge">-35%</div>
-                                    <div className="product-icons">
-                                        <span className="icon-btn"><FaHeart /></span>
-                                        <span className="icon-btn" onClick={() => handleProductClick(product)}><FaEye /></span>
+                            <Col
+                                key={product._id || index}
+                                xs={24}
+                                sm={12}
+                                lg={8}
+                                xl={6}
+                            >
+                                <Card
+                                    hoverable
+                                    className="product-card"
+                                    onClick={() => handleProductClick(product)}
+                                    style={{
+                                        border: "none",
+                                        borderRadius: "16px",
+                                        overflow: "hidden",
+                                        transition: "all 0.4s ease",
+                                        background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
+                                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                                        height: "100%"
+                                    }}
+                                    bodyStyle={{
+                                        padding: "0",
+                                        height: "100%",
+                                        display: "flex",
+                                        flexDirection: "column"
+                                    }}
+                                >
+                                    {/* Image Section */}
+                                    <div
+                                        className="image-section position-relative"
+                                        style={{
+                                            height: "240px",
+                                            overflow: "hidden",
+                                            background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+                                            position: "relative"
+                                        }}
+                                    >
+                                        <img
+                                            src={product.image || product.productImageUrl}
+                                            alt={product.name || product.title}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "contain",
+                                                transition: "all 0.4s ease",
+                                                // padding: "20px"
+                                            }}
+                                        />
+
+                                        {/* Discount Badge */}
+                                        <Tag
+                                            color="#e63946"
+                                            style={{
+                                                position: "absolute",
+                                                top: "12px",
+                                                left: "12px",
+                                                fontWeight: "bold",
+                                                border: "none",
+                                                fontSize: "12px",
+                                                padding: "4px 8px",
+                                                borderRadius: "12px"
+                                            }}
+                                        >
+                                            -35%
+                                        </Tag>
+
+                                        {/* Action Icons */}
+                                        <div
+                                            className="position-absolute d-flex flex-column gap-2"
+                                            style={{
+                                                top: "12px",
+                                                right: "12px"
+                                            }}
+                                        >
+                                            <Button
+                                                type="text"
+                                                icon={<HeartOutlined />}
+                                                onClick={(e) => handleAddToWishlist(product, e)}
+                                                style={{
+                                                    background: "rgba(255,255,255,0.9)",
+                                                    borderRadius: "50%",
+                                                    width: "36px",
+                                                    height: "36px",
+                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                                                    backdropFilter: "blur(10px)",
+                                                    border: "none"
+                                                }}
+                                            />
+                                            <Button
+                                                type="text"
+                                                icon={<EyeOutlined />}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleProductClick(product);
+                                                }}
+                                                style={{
+                                                    background: "rgba(255,255,255,0.9)",
+                                                    borderRadius: "50%",
+                                                    width: "36px",
+                                                    height: "36px",
+                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                                                    backdropFilter: "blur(10px)",
+                                                    border: "none"
+                                                }}
+                                            />
+                                        </div>
+
+                                        {/* Hover Overlay */}
+                                        <div
+                                            className="hover-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center"
+                                            style={{
+                                                top: 0,
+                                                left: 0,
+                                                background: "rgba(230, 57, 70, 0.9)",
+                                                opacity: 0,
+                                                transition: "all 0.3s ease"
+                                            }}
+                                        >
+                                            <Button
+                                                type="primary"
+                                                size="large"
+                                                onClick={(e) => handleAddToCart(product, e)}
+                                                style={{
+                                                    background: "white",
+                                                    border: "none",
+                                                    color: "#e63946",
+                                                    borderRadius: "25px",
+                                                    padding: "12px 24px",
+                                                    fontWeight: "600",
+                                                    transform: "translateY(20px)",
+                                                    transition: "all 0.3s ease"
+                                                }}
+                                            >
+                                                Add to Cart
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="product-img-wrapper" onClick={() => handleProductClick(product)}>
-                                        <img src={product.productImageUrl} alt={product.title} className="product-img" />
-                                        <div className="add-cart-overlay">Add To Cart</div>
+
+                                    {/* Product Info Section */}
+                                    <div className="product-info p-4">
+                                        <h6
+                                            className="product-name mb-3"
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: "600",
+                                                lineHeight: "1.4",
+                                                color: "#2d3748",
+                                                minHeight: "44px",
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
+                                            }}
+                                        >
+                                            {product.name || product.title}
+                                        </h6>
+
+                                        {/* Price Section */}
+                                        <div
+                                            className="price mb-3 fw-bold"
+                                            style={{
+                                                fontSize: "20px",
+                                                color: "#e63946"
+                                            }}
+                                        >
+                                            Rs {product.price}
+                                        </div>
+
+                                        {/* Rating and Action */}
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="rating d-flex align-items-center">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <StarFilled
+                                                        key={star}
+                                                        style={{
+                                                            fontSize: "14px",
+                                                            color: "#ffd700",
+                                                            marginRight: "2px"
+                                                        }}
+                                                    />
+                                                ))}
+                                                <span
+                                                    className="ms-2"
+                                                    style={{
+                                                        fontSize: "12px",
+                                                        color: "#718096"
+                                                    }}
+                                                >
+                                                    (4.5)
+                                                </span>
+                                            </div>
+
+                                            {/* <Button
+                                                type="primary"
+                                                size="small"
+                                                onClick={(e) => handleAddToCart(product, e)}
+                                                style={{
+                                                    background: "#e63946",
+                                                    border: "none",
+                                                    borderRadius: "20px",
+                                                    fontWeight: "500",
+                                                    fontSize: "12px",
+                                                    padding: "6px 16px"
+                                                }}
+                                            >
+                                                Add to Cart
+                                            </Button> */}
+                                        </div>
                                     </div>
-                                    <h6 className="product-title mt-2 mb-1 text-start">
-                                        {product.title.length > 40 ? product.title.slice(0, 40) + "..." : product.title}
-                                    </h6>
-                                    <div className="price text-start">Rs {product.price}</div>
-                                    <div className="rating text-start mb-2">
-                                        {[1, 2, 3, 4, 5].map(star => <FaStar key={star} size={14} color="gold" className="me-1" />)}
-                                    </div>
-                                </div>
-                            </div>
+                                </Card>
+                            </Col>
                         ))}
-                    </div>
+                    </Row>
                 )}
             </div>
-        </>
+
+            {/* Custom Styles */}
+            <style jsx>{`
+                .product-card:hover {
+                    transform: translateY(-8px) !important;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+                }
+                
+                .image-section:hover img {
+                    transform: scale(1.08) !important;
+                }
+                
+                .product-card:hover .hover-overlay {
+                    opacity: 1 !important;
+                }
+                
+                .product-card:hover .hover-overlay button {
+                    transform: translateY(0) !important;
+                }
+                
+                @media (max-width: 576px) {
+                    .image-section {
+                        height: 200px !important;
+                    }
+                }
+            `}</style>
+        </div>
     );
 };
 

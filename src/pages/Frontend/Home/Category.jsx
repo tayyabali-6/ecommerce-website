@@ -21,7 +21,6 @@ const categories = [
     { icon: <LaptopOutlined />, name: "Tech", path: "/techProducts" },
 ];
 
-
 const Category = () => {
     const navigate = useNavigate()
     const scrollRef = useRef(null);
@@ -58,13 +57,15 @@ const Category = () => {
                             key={index}
                             className="category-card"
                             onClick={() => navigate(item.path)}
-                            bodyStyle={{
-                                padding: 0,
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                height: "100%",
+                            styles={{
+                                body: {
+                                    padding: 0,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: "100%",
+                                }
                             }}
                         >
                             <div className="icon">{item.icon}</div>

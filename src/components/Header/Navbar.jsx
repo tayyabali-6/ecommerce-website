@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/Auth';
-import { firestore } from '../../config/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
 import { Button } from 'antd';
 import {
   ShoppingCartOutlined,
@@ -19,14 +17,18 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let unsubscribe;
-    if (user?.uid) {
-      const cartRef = doc(firestore, 'carts', user.uid);
+    const fetchCartCount = async () => {
+      if (!user?.id) {
+        setCartCount(0);
+        return;
+      }
 
-      unsubscribe = onSnapshot(cartRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const cartItems = snapshot.data().cartItems || [];
-          const totalQuantity = cartItems.reduce(
+      try {
+        const response = await fetch(`http://localhost:5000/api/cart/${user.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          const totalQuantity = data.cart.reduce(
             (acc, item) => acc + item.quantity,
             0
           );
@@ -34,12 +36,18 @@ const Navbar = () => {
         } else {
           setCartCount(0);
         }
-      });
-    } else {
-      setCartCount(0);
-    }
+      } catch (error) {
+        console.error("Error fetching cart count:", error);
+        setCartCount(0);
+      }
+    };
 
-    return () => unsubscribe && unsubscribe();
+    fetchCartCount();
+
+    // Optional: Set up polling for real-time updates (every 10 seconds)
+    const interval = setInterval(fetchCartCount, 10000);
+
+    return () => clearInterval(interval);
   }, [user]);
 
   return (
@@ -50,8 +58,23 @@ const Navbar = () => {
           className="navbar-brand fw-bold text-dark fs-4 d-flex align-items-center gap-2"
         >
           <ShopOutlined style={{ fontSize: '1.6rem', color: '#1d3557' }} />
-          MyShop
+          MediaLyx
         </Link>
+
+
+         {/* <li className="nav-item"> */}
+              <Link
+                className="nav-link text-dark fw-medium d-flex align-items-center gap-1 position-relative"
+                to="/cart"
+              >
+                <ShoppingCartOutlined /> Cart
+                {cartCount > 0 && (
+                  <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </Link>
+            {/* </li> */}
 
         <button
           className="navbar-toggler"
@@ -84,6 +107,25 @@ const Navbar = () => {
                 <AppstoreOutlined /> All Products
               </Link>
             </li>
+            {/* <li className="nav-item dropdown">
+              <Link
+                className="nav-link text-dark fw-medium d-flex align-items-center gap-1 dropdown-toggle"
+                to="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <AppstoreOutlined /> Categories
+              </Link>
+              <ul className="dropdown-menu">
+                <li><Link className="dropdown-item" to="/fashionProducts">Fashion</Link></li>
+                <li><Link className="dropdown-item" to="/mobileProducts">Mobile</Link></li>
+                <li><Link className="dropdown-item" to="/laptopProducts">Laptop</Link></li>
+                <li><Link className="dropdown-item" to="/cameraProducts">Camera</Link></li>
+                <li><Link className="dropdown-item" to="/techProducts">Tech</Link></li>
+                <li><Link className="dropdown-item" to="/booksProducts">Books</Link></li>
+              </ul>
+            </li> */}
           </ul>
 
           <ul className="navbar-nav gap-3 align-items-center ms-auto">
@@ -93,7 +135,7 @@ const Navbar = () => {
                   className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
                   to="/dashboard/user/userDashboard"
                 >
-                  <DashboardOutlined /> User Dashboard
+                  <DashboardOutlined /> Dashboard
                 </Link>
               </li>
             )}
@@ -103,35 +145,54 @@ const Navbar = () => {
                   className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
                   to="/dashboard/admin/adminDashboard"
                 >
-                  <DashboardOutlined /> Admin Dashboard
+                  <DashboardOutlined /> Admin Panel
                 </Link>
               </li>
             )}
             <li className="nav-item">
               <Link
-                className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
+                className="nav-link text-dark fw-medium d-flex align-items-center gap-1 position-relative"
                 to="/cart"
               >
                 <ShoppingCartOutlined /> Cart
-                <span className="badge bg-danger rounded-pill ms-1">{cartCount}</span>
+                {cartCount > 0 && (
+                  <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
               </Link>
             </li>
             <li className="nav-item">
               {isAuth ? (
-                <Button
-                  type="link"
-                  className="text-danger fw-semibold d-flex align-items-center gap-1"
-                  onClick={() => handleLogout(navigate)}
-                >
-                  <LogoutOutlined /> Logout
-                </Button>
+                <div className="d-flex align-items-center gap-3">
+                  <span className="text-dark fw-medium d-flex align-items-center gap-1">
+                    <UserOutlined /> 
+                    {user?.name?.split(' ')[0] || 'User'}
+                  </span>
+                  <Button
+                    type="link"
+                    className="text-danger fw-semibold d-flex align-items-center gap-1"
+                    onClick={() => handleLogout(navigate)}
+                  >
+                    <LogoutOutlined /> Logout
+                  </Button>
+                </div>
               ) : (
-                <Link
-                  className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
-                  to="/auth/register"
-                >
-                  <UserOutlined /> Sign Up
-                </Link>
+                <div className="d-flex gap-2">
+                  <Link
+                    className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
+                    to="/auth/login"
+                  >
+                    <UserOutlined /> Login
+                  </Link>
+                  <span className="text-muted">|</span>
+                  <Link
+                    className="nav-link text-dark fw-medium d-flex align-items-center gap-1"
+                    to="/auth/register"
+                  >
+                    <UserOutlined /> Sign Up
+                  </Link>
+                </div>
               )}
             </li>
           </ul>
@@ -154,7 +215,24 @@ const Navbar = () => {
             padding: 0;
           }
           .badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+          }
+          .dropdown-item {
+            transition: all 0.2s ease;
+          }
+          .dropdown-item:hover {
+            background-color: #1d3557;
+            color: white;
           }
         `}
       </style>

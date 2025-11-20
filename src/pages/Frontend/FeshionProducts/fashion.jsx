@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../../../config/firebase";
 import { useNavigate } from "react-router-dom";
 import { FaHeart, FaEye, FaStar } from "react-icons/fa";
 
@@ -11,14 +9,18 @@ const Fashion = () => {
 
   const fetchFashionProducts = async () => {
     try {
-      const snapshot = await getDocs(collection(firestore, "products"));
-      const allProducts = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const fashionOnly = allProducts.filter((item) => item.category === "fashion");
-      setProducts(fashionOnly);
+      const response = await fetch('http://localhost:5000/api/products');
+      const data = await response.json();
+      
+      if (data.success) {
+        // Filter products with category "fashion"
+        const fashionOnly = data.products.filter((item) => 
+          item.category.toLowerCase() === "fashion"
+        );
+        setProducts(fashionOnly);
+      } else {
+        console.error("Error fetching products:", data.message);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching fashion products:", error);
@@ -52,7 +54,7 @@ const Fashion = () => {
       ) : (
         <div className="row g-4">
           {products.map((item, index) => (
-            <div key={index} className="col-md-3 col-sm-6">
+            <div key={item._id || index} className="col-md-3 col-sm-6">
               <div className="product-box shadow-sm position-relative">
                 <div className="discount-badge">-35%</div>
 
@@ -62,12 +64,14 @@ const Fashion = () => {
                 </div>
 
                 <div className="product-img-wrapper" onClick={() => handleProductClick(item)}>
-                  <img src={item.productImageUrl} alt={item.title} className="product-img" />
+                  <img src={item.image || item.productImageUrl} alt={item.name || item.title} className="product-img" />
                   <div className="add-cart-overlay">Add To Cart</div>
                 </div>
 
                 <h6 className="product-title mt-2 mb-1 text-start">
-                  {item.title.length > 40 ? item.title.slice(0, 40) + "..." : item.title}
+                  {(item.name || item.title).length > 40 ? 
+                    (item.name || item.title).slice(0, 40) + "..." : 
+                    (item.name || item.title)}
                 </h6>
                 <div className="price text-start">Rs {item.price}</div>
                 <div className="rating text-start mb-2">

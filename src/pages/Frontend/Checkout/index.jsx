@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, Timestamp, updateDoc, doc } from 'firebase/firestore';
 import { message } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../../context/Auth';
-import { firestore } from '../../../config/firebase';
 
 const Checkout = () => {
   const { user } = useAuthContext();
@@ -12,6 +10,7 @@ const Checkout = () => {
   const [form, setForm] = useState({ name: '', phone: '', address: '' });
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const { totalAmount, cartItems: stateCartItems } = location.state || {};
@@ -30,25 +29,74 @@ const Checkout = () => {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  // Get current location function
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setLocationLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // Simple address format
+          const address = `Latitude: ${latitude.toFixed(4)}, Longitude: ${longitude.toFixed(4)}`;
+          setForm(prev => ({ ...prev, address }));
+          setLocationLoading(false);
+          messageApi.success('Location detected successfully!');
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setLocationLoading(false);
+          messageApi.error('Please allow location access or enter address manually');
+        }
+      );
+    } else {
+      messageApi.error('Geolocation is not supported by this browser');
+    }
+  };
+
+  // Use sample location
+  const useSampleLocation = () => {
+    const sampleAddress = "D-Type Colony, Bajwa Street, Faisalabad, Pakistan";
+    setForm(prev => ({ ...prev, address: sampleAddress }));
+    messageApi.success('Sample location added!');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, phone, address } = form;
     if (!name || !phone || !address) return messageApi.error('All fields are required');
+    
     setLoading(true);
     try {
-      await addDoc(collection(firestore, 'orders'), {
-        userId: user.uid,
-        name,
-        phone,
-        address,
-        items: cartItems,
-        totalAmount,
-        time: Timestamp.now(),
-        status: 'Pending'
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          name,
+          phone,
+          address,
+          items: cartItems,
+          totalAmount
+        }),
       });
-      await updateDoc(doc(firestore, 'carts', user.uid), { cartItems: [] });
-      messageApi.success('Order placed successfully!');
-      navigate('/thank-you');
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageApi.success('Order created! Proceeding to payment...');
+        
+        navigate('/payment', { 
+          state: { 
+            order: data.order, 
+            totalAmount: totalAmount 
+          } 
+        });
+        
+      } else {
+        messageApi.error(data.message);
+      }
     } catch (error) {
       console.error(error);
       messageApi.error('Failed to place order');
@@ -91,6 +139,7 @@ const Checkout = () => {
                 name="name"
                 className="form-control rounded-pill shadow-sm"
                 placeholder="John Doe"
+                value={form.name}
                 onChange={handleChange}
                 style={{ background: 'rgba(255,255,255,0.7)' }}
               />
@@ -102,10 +151,12 @@ const Checkout = () => {
                 name="phone"
                 className="form-control rounded-pill shadow-sm"
                 placeholder="03XX-XXXXXXX"
+                value={form.phone}
                 onChange={handleChange}
                 style={{ background: 'rgba(255,255,255,0.7)' }}
               />
             </div>
+            
             <div className="col-12">
               <label className="form-label text-white fw-semibold">Delivery Address</label>
               <textarea
@@ -113,9 +164,54 @@ const Checkout = () => {
                 rows="4"
                 className="form-control rounded-4 shadow-sm"
                 placeholder="Your delivery address..."
+                value={form.address}
                 onChange={handleChange}
-                style={{ background: 'rgba(255,255,255,0.7)' }}
+                style={{ 
+                  background: 'rgba(255,255,255,0.7)',
+                  marginBottom: '10px'
+                }}
               ></textarea>
+              
+              {/* Location Buttons */}
+              <div className="d-flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  className="btn btn-outline-light btn-sm"
+                  onClick={getCurrentLocation}
+                  disabled={locationLoading}
+                  style={{ borderRadius: '20px' }}
+                >
+                  {locationLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" />
+                      Detecting Location...
+                    </>
+                  ) : (
+                    '📍 Use Current Location'
+                  )}
+                </button>
+                
+                <button
+                  type="button"
+                  className="btn btn-outline-warning btn-sm"
+                  onClick={useSampleLocation}
+                  style={{ borderRadius: '20px' }}
+                >
+                  🗺️ Use Sample Location
+                </button>
+              </div>
+
+              {/* Selected Location Display */}
+              {form.address && (
+                <div className="mt-2 p-2 rounded" style={{ 
+                  background: 'rgba(255,255,255,0.2)', 
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  fontSize: '14px'
+                }}>
+                  <span className="text-white fw-semibold">Selected Address: </span>
+                  <span className="text-light">{form.address}</span>
+                </div>
+              )}
             </div>
 
             <div className="col-12 text-end">
@@ -140,7 +236,7 @@ const Checkout = () => {
                 onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
                 onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
-                {loading ? 'Placing Order...' : `Place Order (Rs. ${totalAmount})`}
+                {loading ? 'Creating Order...' : `Proceed to Payment (Rs. ${totalAmount})`}
               </button>
             </div>
           </form>

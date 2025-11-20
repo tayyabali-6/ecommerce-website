@@ -15,6 +15,7 @@ import MobileProducts from './MobileProducts'
 import BooksProducts from './BooksProducts'
 import TechProducts from './TechProducts'
 import PageNotFound from './PageNotFound'
+import Payment from '../../components/Payment/Payment'
 
 const Frontend = () => {
     return (
@@ -34,6 +35,7 @@ const Frontend = () => {
                 <Route path='/techProducts' element={<TechProducts />} />
                 <Route path='/mobileProducts' element={<MobileProducts/>} />
                   <Route path="*" element={<PageNotFound />} />
+                  <Route path="/payment" element={<Payment />} />
 
             </Routes>
             <Footer />
