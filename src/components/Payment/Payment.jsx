@@ -12,6 +12,9 @@ const Payment = () => {
 
     const [processing, setProcessing] = useState(false);
 
+    // Backend URL
+    const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
     // ✅ ONLY CASH ON DELIVERY PAYMENT
     const handlePayment = async () => {
         console.log('🔄 Payment button clicked');
@@ -30,7 +33,7 @@ const Payment = () => {
         setProcessing(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/payments/cod', {
+            const response = await fetch(`${BACKEND_URL}/api/payments/cod`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -18,12 +18,15 @@ const AddProducts = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const uploadImageToServer = async (file) => {
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(`${BACKEND_URL}/api/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -58,7 +61,7 @@ const AddProducts = () => {
       if (!imageUrl) return;
 
       // Create product in MERN backend
-      const response = await fetch('http://localhost:5000/api/products', {
+      const response = await fetch(`${BACKEND_URL}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -8,17 +8,20 @@ const AuthProvider = ({ children }) => {
     const [isAppLoader, setIsAppLoader] = useState(true);
     const [getAllProduct, setGetAllProduct] = useState([]);
 
+    // Backend URL
+    const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
     // Check if user is logged in from backend
     const checkAuthStatus = async () => {
         try {
             const token = localStorage.getItem('token');
-            
+
             if (!token) {
                 setIsAppLoader(false);
                 return;
             }
 
-            const response = await fetch('http://localhost:5000/api/users/profile', {
+            const response = await fetch(`${BACKEND_URL}/api/users/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -29,9 +32,9 @@ const AuthProvider = ({ children }) => {
             const data = await response.json();
 
             if (data.success) {
-                setState({ 
-                    isAuth: true, 
-                    user: data.user 
+                setState({
+                    isAuth: true,
+                    user: data.user
                 });
                 // Update localStorage with fresh data
                 localStorage.setItem('user', JSON.stringify(data.user));
@@ -57,9 +60,9 @@ const AuthProvider = ({ children }) => {
     const login = (userData, token) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
-        setState({ 
-            isAuth: true, 
-            user: userData 
+        setState({
+            isAuth: true,
+            user: userData
         });
     };
 
@@ -78,9 +81,9 @@ const AuthProvider = ({ children }) => {
     // Get all products from backend
     const getAllProductFunction = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/products');
+            const response = await fetch(`${BACKEND_URL}/api/products`);
             const data = await response.json();
-            
+
             if (data.success) {
                 setGetAllProduct(data.products);
             } else {
@@ -97,11 +100,11 @@ const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ 
-            ...state, 
-            setState, 
-            handleLogout, 
-            isAppLoader, 
+        <AuthContext.Provider value={{
+            ...state,
+            setState,
+            handleLogout,
+            isAppLoader,
             getAllProduct,
             getAllProductFunction,
             login, // Add login function

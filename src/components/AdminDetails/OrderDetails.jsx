@@ -7,9 +7,12 @@ const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const [messageApi, contextHolder] = message.useMessage();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/orders');
+      const response = await fetch(`${BACKEND_URL}/api/orders`);
       const data = await response.json();
 
       if (data.success) {
@@ -27,7 +30,7 @@ const OrderDetails = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -38,18 +38,24 @@ const Register = () => {
     setIsProcessing(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      // const response = await fetch('http://localhost:5000/api/auth/register', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     fname,
+      //     lname,
+      //     email,
+      //     password,
+      //     confirmPassword
+      //   }),
+      // });
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fname,
-          lname,
-          email,
-          password,
-          confirmPassword
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fname, lname, email, password, confirmPassword }),
       });
 
       const data = await response.json();
@@ -76,7 +82,7 @@ const Register = () => {
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)'
     }}>
       {contextHolder}
-      
+
       {/* Mobile Header - Only show on mobile */}
       <div className="mobile-header">
         <Title

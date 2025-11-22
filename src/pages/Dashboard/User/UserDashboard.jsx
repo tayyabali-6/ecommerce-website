@@ -15,22 +15,25 @@ const UserDashboard = () => {
     totalSpent: 0
   });
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   useEffect(() => {
     const fetchOrders = async () => {
       if (!authUser?.id) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/orders/user/${authUser.id}`);
+        const response = await fetch(`${BACKEND_URL}/api/orders/user/${authUser.id}`);
         const data = await response.json();
-        
+
         if (data.success) {
           setOrders(data.orders);
-          
+
           // Calculate statistics
           const totalOrders = data.orders.length;
           const pendingOrders = data.orders.filter(order => order.status === 'Pending').length;
           const totalSpent = data.orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-          
+
           setStats({
             totalOrders,
             pendingOrders,
@@ -62,11 +65,11 @@ const UserDashboard = () => {
   const renderOrderItems = (items) => (
     <div style={{ maxWidth: '200px' }}>
       {items.slice(0, 3).map((item, index) => (
-        <div 
-          key={index} 
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+        <div
+          key={index}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
             marginBottom: '8px',
             padding: '4px',
             border: '1px solid #f0f0f0',
@@ -79,15 +82,15 @@ const UserDashboard = () => {
             height={35}
             src={item.image || '/default-product.png'}
             alt={item.name}
-            style={{ 
+            style={{
               objectFit: 'cover',
               borderRadius: '4px',
               marginRight: '8px'
             }}
             placeholder={
-              <div style={{ 
-                width: 35, 
-                height: 35, 
+              <div style={{
+                width: 35,
+                height: 35,
                 background: '#f0f0f0',
                 display: 'flex',
                 alignItems: 'center',
@@ -99,12 +102,12 @@ const UserDashboard = () => {
             }
             fallback="/default-product.png"
           />
-          
+
           {/* Product Details */}
           <div style={{ flex: 1 }}>
             <Tooltip title={item.name}>
-              <div style={{ 
-                fontSize: '11px', 
+              <div style={{
+                fontSize: '11px',
                 fontWeight: '500',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -120,7 +123,7 @@ const UserDashboard = () => {
           </div>
         </div>
       ))}
-      
+
       {/* Show more items indicator */}
       {items.length > 3 && (
         <Tag color="blue" style={{ fontSize: '10px', marginTop: '4px' }}>
@@ -191,10 +194,10 @@ const UserDashboard = () => {
 
   if (!authUser) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)'
       }}>
@@ -206,7 +209,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div style={{ 
+    <div style={{
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)',
       minHeight: '100vh',
       padding: '40px 0'
@@ -214,7 +217,7 @@ const UserDashboard = () => {
       <div className="container">
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <Title level={1} style={{ 
+          <Title level={1} style={{
             color: 'white',
             margin: 0,
             fontWeight: 700,
@@ -241,11 +244,11 @@ const UserDashboard = () => {
               bodyStyle={{ padding: '32px' }}
             >
               <div style={{ textAlign: 'center' }}>
-                <Avatar 
-                  size={80} 
+                <Avatar
+                  size={80}
                   icon={<UserOutlined />}
                   src={authUser?.profileImage}
-                  style={{ 
+                  style={{
                     backgroundColor: '#e63946',
                     marginBottom: '16px'
                   }}
@@ -256,10 +259,10 @@ const UserDashboard = () => {
                 <Text type="secondary" style={{ fontSize: '16px', display: 'block', marginBottom: '8px' }}>
                   {authUser?.email}
                 </Text>
-                <Tag 
-                  color="#1d3557" 
-                  style={{ 
-                    fontSize: '14px', 
+                <Tag
+                  color="#1d3557"
+                  style={{
+                    fontSize: '14px',
                     padding: '6px 12px',
                     border: 'none',
                     color: 'white',
@@ -364,7 +367,7 @@ const UserDashboard = () => {
                 <Spin size="large" />
               </div>
             ) : orders.length === 0 ? (
-              <Empty 
+              <Empty
                 description="No orders placed yet"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
@@ -372,11 +375,11 @@ const UserDashboard = () => {
               <Table
                 dataSource={orders.map(order => ({ ...order, key: order._id }))}
                 columns={columns}
-                pagination={{ 
+                pagination={{
                   pageSize: 10,
                   showSizeChanger: true,
                   showQuickJumper: true,
-                  showTotal: (total, range) => 
+                  showTotal: (total, range) =>
                     `${range[0]}-${range[1]} of ${total} orders`
                 }}
                 scroll={{ x: 1000 }}

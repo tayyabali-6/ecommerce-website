@@ -7,14 +7,17 @@ const Fashion = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const fetchFashionProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${BACKEND_URL}/api/products`);
       const data = await response.json();
-      
+
       if (data.success) {
         // Filter products with category "fashion"
-        const fashionOnly = data.products.filter((item) => 
+        const fashionOnly = data.products.filter((item) =>
           item.category.toLowerCase() === "fashion"
         );
         setProducts(fashionOnly);
@@ -69,8 +72,8 @@ const Fashion = () => {
                 </div>
 
                 <h6 className="product-title mt-2 mb-1 text-start">
-                  {(item.name || item.title).length > 40 ? 
-                    (item.name || item.title).slice(0, 40) + "..." : 
+                  {(item.name || item.title).length > 40 ?
+                    (item.name || item.title).slice(0, 40) + "..." :
                     (item.name || item.title)}
                 </h6>
                 <div className="price text-start">Rs {item.price}</div>

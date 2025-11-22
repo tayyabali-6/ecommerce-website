@@ -24,7 +24,18 @@ const Login = () => {
 
     setIsProcessing(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      // const response = await fetch('http://localhost:5000/api/auth/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     email,
+      //     password
+      //   }),
+      // });
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,6 +45,7 @@ const Login = () => {
           password
         }),
       });
+
 
       const data = await response.json();
 
@@ -64,7 +76,7 @@ const Login = () => {
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)'
     }}>
       {contextHolder}
-      
+
       {/* Mobile Header - Only show on mobile */}
       <div className="mobile-header">
         <Title

@@ -37,25 +37,28 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const screens = useBreakpoint();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch total products count
-        const productsResponse = await fetch('http://localhost:5000/api/products');
+        const productsResponse = await fetch(`${BACKEND_URL}/api/products`);
         const productsData = await productsResponse.json();
         if (productsData.success) {
           setTotalProducts(productsData.products.length);
         }
 
         // Fetch total orders count
-        const ordersResponse = await fetch('http://localhost:5000/api/orders');
+        const ordersResponse = await fetch(`${BACKEND_URL}/api/orders`);
         const ordersData = await ordersResponse.json();
         if (ordersData.success) {
           setTotalOrders(ordersData.orders.length);
         }
 
         // Fetch total users count
-        const usersResponse = await fetch('http://localhost:5000/api/users');
+        const usersResponse = await fetch(`${BACKEND_URL}/api/users`);
         const usersData = await usersResponse.json();
         if (usersData.success) {
           setTotalUsers(usersData.users.length);

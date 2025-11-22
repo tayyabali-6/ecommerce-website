@@ -13,6 +13,9 @@ const Checkout = () => {
   const [locationLoading, setLocationLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const { totalAmount, cartItems: stateCartItems } = location.state || {};
 
   useEffect(() => {
@@ -67,7 +70,7 @@ const Checkout = () => {
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch(`${BACKEND_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

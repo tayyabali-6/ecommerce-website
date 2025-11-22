@@ -6,6 +6,9 @@ const Track = () => {
   const { getAllProduct } = useAuthContext();
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   // ✅ Safe data filtering - check if getAllProduct exists
   const getAllProductSafe = getAllProduct || [];
 
@@ -39,10 +42,10 @@ const Track = () => {
                 </div>
                 <div className="product-img-wrapper" onClick={() => handleProductClick(item)}>
                   {/* ✅ Add safe check for productImageUrl */}
-                  <img 
-                    src={item.productImageUrl || "/default-image.jpg"} 
-                    alt={item.title || "Product"} 
-                    className="product-img" 
+                  <img
+                    src={item.productImageUrl || "/default-image.jpg"}
+                    alt={item.title || "Product"}
+                    className="product-img"
                   />
                   <div className="add-cart-overlay">Add To Cart</div>
                 </div>

@@ -6,10 +6,13 @@ const UsersDetails = () => {
   const [loading, setLoading] = useState(true);
   const [messageApi, contextHolder] = message.useMessage();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch(`${BACKEND_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -34,7 +37,7 @@ const UsersDetails = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/api/users/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -59,7 +62,7 @@ const UsersDetails = () => {
   const handleRoleChange = async (userId, newRole) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/role`, {
+      const response = await fetch(`${BACKEND_URL}/api/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

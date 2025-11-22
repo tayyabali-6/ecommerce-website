@@ -8,13 +8,16 @@ const ForgotPassword = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const handleReset = async (e) => {
     e.preventDefault();
     if (!email) return messageApi.error('Please enter your email');
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch(`${BACKEND_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

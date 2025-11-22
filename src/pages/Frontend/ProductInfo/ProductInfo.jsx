@@ -8,6 +8,9 @@ const ProductInfo = () => {
     const { user } = useAuthContext();
     const [messageApi, contextHolder] = message.useMessage();
 
+    // Backend URL
+    const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
     const handleAddToCart = async () => {
         if (!user?.id) {
             messageApi.error("Please login first to add items to cart");
@@ -15,7 +18,7 @@ const ProductInfo = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/cart/${user.id}/add`, {
+            const response = await fetch(`${BACKEND_URL}/api/cart/${user.id}/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,10 +44,10 @@ const ProductInfo = () => {
 
     if (!product) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '50vh',
                 fontSize: '18px',
                 color: '#666'
@@ -63,9 +66,9 @@ const ProductInfo = () => {
                 <Row gutter={[40, 40]} align="top">
                     {/* Product Image */}
                     <Col xs={24} md={12}>
-                        <div style={{ 
-                            background: '#f8f9fa', 
-                            borderRadius: '12px', 
+                        <div style={{
+                            background: '#f8f9fa',
+                            borderRadius: '12px',
                             padding: '10px',
                             display: 'flex',
                             alignItems: 'center',
@@ -88,8 +91,8 @@ const ProductInfo = () => {
                     <Col xs={24} md={12}>
                         <div style={{ padding: '20px 0' }}>
                             {/* Product Title */}
-                            <h1 style={{ 
-                                fontSize: '28px', 
+                            <h1 style={{
+                                fontSize: '28px',
                                 fontWeight: '600',
                                 color: '#1a1a1a',
                                 marginBottom: '16px',
@@ -99,8 +102,8 @@ const ProductInfo = () => {
                             </h1>
 
                             {/* Price */}
-                            <div style={{ 
-                                fontSize: '32px', 
+                            <div style={{
+                                fontSize: '32px',
                                 fontWeight: '700',
                                 color: '#e63946',
                                 marginBottom: '20px'
@@ -110,8 +113,8 @@ const ProductInfo = () => {
 
                             {/* Description */}
                             {product.description && (
-                                <p style={{ 
-                                    fontSize: '16px', 
+                                <p style={{
+                                    fontSize: '16px',
                                     lineHeight: '1.6',
                                     color: '#666',
                                     marginBottom: '24px'
@@ -173,8 +176,8 @@ const ProductInfo = () => {
                             </div>
 
                             {/* Additional Info */}
-                            <div style={{ 
-                                marginTop: '30px', 
+                            <div style={{
+                                marginTop: '30px',
                                 padding: '20px',
                                 background: '#f8f9fa',
                                 borderRadius: '8px'

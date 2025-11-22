@@ -7,9 +7,12 @@ const Books = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const fetchBooksProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${BACKEND_URL}/api/products`);
       const data = await response.json();
       
       if (data.success) {

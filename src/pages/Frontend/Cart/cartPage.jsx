@@ -11,17 +11,20 @@ const Cart = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   useEffect(() => {
     const fetchCart = async () => {
       if (!user?.id) {
         setLoading(false);
         return;
       }
-      
+
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${user.id}`);
+        const response = await fetch(`${BACKEND_URL}/api/cart/${user.id}`);
         const data = await response.json();
-        
+
         if (data.success) {
           setCartItems(data.cart);
         }
@@ -37,9 +40,9 @@ const Cart = () => {
       const all = [];
       for (const item of cartItems) {
         try {
-          const response = await fetch(`http://localhost:5000/api/products`);
+          const response = await fetch(`${BACKEND_URL}/api/products`);
           const data = await response.json();
-          
+
           if (data.success) {
             const product = data.products.find(p => p._id === item.productId);
             if (product) {
@@ -57,7 +60,7 @@ const Cart = () => {
       setProducts(all);
       setLoading(false);
     };
-    
+
     if (cartItems.length > 0) {
       fetchProducts();
     } else if (cartItems.length === 0 && user) {
@@ -67,14 +70,14 @@ const Cart = () => {
 
   const updateQuantity = async (productId, change) => {
     if (!user?.id) return;
-    
+
     const item = cartItems.find(item => item.productId === productId);
     if (!item) return;
 
     const newQuantity = Math.max(1, item.quantity + change);
-    
+
     try {
-      const response = await fetch(`http://localhost:5000/api/cart/${user.id}/update`, {
+      const response = await fetch(`${BACKEND_URL}/api/cart/${user.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +89,7 @@ const Cart = () => {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         const newCartItems = cartItems.map((item) =>
           item.productId === productId
@@ -102,14 +105,14 @@ const Cart = () => {
 
   const removeFromCart = async (productId) => {
     if (!user?.id) return;
-    
+
     try {
-      const response = await fetch(`http://localhost:5000/api/cart/${user.id}/remove/${productId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/cart/${user.id}/remove/${productId}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         const newCartItems = cartItems.filter((item) => item.productId !== productId);
         setCartItems(newCartItems);
@@ -151,7 +154,7 @@ const Cart = () => {
   }
 
   return (
-    <main style={{background:'#1d3557'}}>
+    <main style={{ background: '#1d3557' }}>
       <div className="container my-4" >
         {contextHolder}
         <div className="row">
@@ -217,8 +220,8 @@ const Cart = () => {
               <p>
                 Total Price: <b>Rs. {getTotalPrice()}</b>
               </p>
-              <button 
-                className="btn btn-danger w-100" 
+              <button
+                className="btn btn-danger w-100"
                 onClick={handleCheckout}
                 disabled={products.length === 0}
               >

@@ -24,11 +24,14 @@ const UpdateProducts = () => {
     inStock: true
   });
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const getSingleProductFunction = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${id}`);
+      const response = await fetch(`${BACKEND_URL}/api/products/${id}`);
       const data = await response.json();
-      
+
       if (data.success) {
         const productData = data.product;
         setProduct({
@@ -62,7 +65,7 @@ const UpdateProducts = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(`${BACKEND_URL}/api/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -99,7 +102,7 @@ const UpdateProducts = () => {
         }
       }
 
-      const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/api/products/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -138,8 +141,8 @@ const UpdateProducts = () => {
     <>
       {contextHolder}
       <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "100vh", background: '#0a0f1f' }}>
-        <div className="border p-4 rounded shadow-sm" style={{ 
-          width: "450px", 
+        <div className="border p-4 rounded shadow-sm" style={{
+          width: "450px",
           background: 'rgba(255,255,255,0.05)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.15) !important'

@@ -11,6 +11,9 @@ const HomePageProducts = () => {
   const { getAllProduct } = useAuthContext();
   const navigate = useNavigate();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const handlehomepageProduct = (product) => {
     navigate("/productinfo", { state: { product } });
   };
@@ -31,7 +34,7 @@ const HomePageProducts = () => {
 
         {/* Navigation Buttons */}
         <div className="position-absolute top-0 end-0 z-3 d-none d-md-flex">
-          <Button 
+          <Button
             className="swiper-button-prev me-2"
             shape="circle"
             size="small"
@@ -42,7 +45,7 @@ const HomePageProducts = () => {
               boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
             }}
           />
-          <Button 
+          <Button
             className="swiper-button-next"
             shape="circle"
             size="small"
@@ -66,26 +69,26 @@ const HomePageProducts = () => {
             spaceBetween={24}
             slidesPerView={4}
             breakpoints={{
-              0: { 
-                slidesPerView: 1, 
+              0: {
+                slidesPerView: 1,
                 spaceBetween: 16,
                 centeredSlides: true
               },
-              576: { 
-                slidesPerView: 2, 
-                spaceBetween: 18 
+              576: {
+                slidesPerView: 2,
+                spaceBetween: 18
               },
-              768: { 
-                slidesPerView: 2.5, 
-                spaceBetween: 20 
+              768: {
+                slidesPerView: 2.5,
+                spaceBetween: 20
               },
-              992: { 
-                slidesPerView: 3.2, 
-                spaceBetween: 22 
+              992: {
+                slidesPerView: 3.2,
+                spaceBetween: 22
               },
-              1200: { 
-                slidesPerView: 4, 
-                spaceBetween: 24 
+              1200: {
+                slidesPerView: 4,
+                spaceBetween: 24
               }
             }}
           >
@@ -93,7 +96,7 @@ const HomePageProducts = () => {
               const { image, productImageUrl, name, title, price, discountPrice } = item;
               const originalPrice = discountPrice ? price : null;
               const displayPrice = discountPrice || price;
-              
+
               return (
                 <SwiperSlide key={item._id || index}>
                   <Card
@@ -108,7 +111,7 @@ const HomePageProducts = () => {
                       background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
                       boxShadow: "0 4px 20px rgba(0,0,0,0.08)"
                     }}
-                    bodyStyle={{ 
+                    bodyStyle={{
                       padding: "0",
                       height: "100%",
                       display: "flex",
@@ -116,10 +119,10 @@ const HomePageProducts = () => {
                     }}
                   >
                     {/* Image Section */}
-                    <div 
+                    <div
                       className="image-section position-relative"
                       onClick={() => handlehomepageProduct(item)}
-                      style={{ 
+                      style={{
                         cursor: "pointer",
                         height: "220px",
                         overflow: "hidden",
@@ -127,11 +130,11 @@ const HomePageProducts = () => {
                         position: "relative"
                       }}
                     >
-                      <img 
-                        src={image || productImageUrl} 
-                        alt={name || title} 
+                      <img
+                        src={image || productImageUrl}
+                        alt={name || title}
                         className="product-image"
-                        style={{ 
+                        style={{
                           width: "100%",
                           height: "100%",
                           objectFit: "contain",
@@ -139,7 +142,7 @@ const HomePageProducts = () => {
                           padding: "0px"
                         }}
                       />
-                      
+
                       {/* Discount Badge */}
                       <Tag
                         color="#e63946"
@@ -158,11 +161,11 @@ const HomePageProducts = () => {
                       </Tag>
 
                       {/* Action Icons */}
-                      <div 
+                      <div
                         className="position-absolute d-flex flex-column gap-2"
-                        style={{ 
-                          top: "12px", 
-                          right: "12px" 
+                        style={{
+                          top: "12px",
+                          right: "12px"
                         }}
                       >
                         <Button
@@ -195,7 +198,7 @@ const HomePageProducts = () => {
                       </div>
 
                       {/* Hover Overlay */}
-                      <div 
+                      <div
                         className="hover-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center"
                         style={{
                           top: 0,
@@ -227,9 +230,9 @@ const HomePageProducts = () => {
 
                     {/* Product Info Section */}
                     <div className="product-info p-4">
-                      <h6 
-                        className="product-name mb-2" 
-                        style={{ 
+                      <h6
+                        className="product-name mb-2"
+                        style={{
                           fontSize: "15px",
                           fontWeight: "600",
                           lineHeight: "1.4",
@@ -243,20 +246,20 @@ const HomePageProducts = () => {
                       >
                         {name || title}
                       </h6>
-                      
+
                       {/* Price Section */}
                       <div className="price-section mb-3">
-                        <div 
-                          className="current-price fw-bold" 
-                          style={{ 
-                            fontSize: "18px", 
+                        <div
+                          className="current-price fw-bold"
+                          style={{
+                            fontSize: "18px",
                             color: "#e63946"
                           }}
                         >
                           Rs {displayPrice}
                         </div>
                         {originalPrice && (
-                          <div 
+                          <div
                             className="original-price text-muted text-decoration-line-through ms-2"
                             style={{ fontSize: "14px" }}
                           >
@@ -264,31 +267,31 @@ const HomePageProducts = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Rating and Add to Cart */}
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="rating d-flex align-items-center">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <StarFilled 
-                              key={star} 
-                              style={{ 
-                                fontSize: "14px", 
+                            <StarFilled
+                              key={star}
+                              style={{
+                                fontSize: "14px",
                                 color: "#ffd700",
                                 marginRight: "2px"
-                              }} 
+                              }}
                             />
                           ))}
-                          <span 
+                          <span
                             className="ms-1"
-                            style={{ 
-                              fontSize: "12px", 
-                              color: "#718096" 
+                            style={{
+                              fontSize: "12px",
+                              color: "#718096"
                             }}
                           >
                             (128)
                           </span>
                         </div>
-                        
+
                         {/* <Button
                         onClick={handleViewAllProducts}
                           type="primary"
@@ -336,7 +339,7 @@ const HomePageProducts = () => {
           View All Products
         </Button>
       </div>
-      
+
       <hr className="my-4" />
 
       {/* Hover Effects CSS */}

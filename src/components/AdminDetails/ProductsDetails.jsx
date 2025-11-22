@@ -8,9 +8,12 @@ const ProductDetail = () => {
   const { getAllProduct, getAllProductFunction } = useAuthContext();
   const [messageApi, contextHolder] = message.useMessage();
 
+  // Backend URL
+  const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
+
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/api/products/${id}`, {
         method: 'DELETE',
       });
 
