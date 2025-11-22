@@ -18,15 +18,25 @@ const Hero = () => {
     <div style={{
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)',
       minHeight: '100vh',
-      color: 'white'
+      color: 'white',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Background Image for Mobile */}
+      <div className="mobile-bg-image">
+        <img
+          src="https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoes-WrLlWX.png"
+          alt="Nike Air Force 1 Shoes"
+        />
+      </div>
+
       <div className="container">
         <Row
           align="middle"
-          style={{ minHeight: '100vh' }}
+          style={{ minHeight: '100vh', position: 'relative', zIndex: 2 }}
           gutter={[48, 48]}
         >
-          {/* Left Content */}
+          {/* Left Content - Becomes top content on mobile */}
           <Col xs={24} lg={12}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
               {/* Badge */}
@@ -84,7 +94,7 @@ const Hero = () => {
                   type="primary"
                   size="large"
                   icon={<ShoppingOutlined />}
-                  onClick={'/'}
+                  onClick={handleShopNow}
                   style={{
                     background: '#e63946',
                     border: 'none',
@@ -99,12 +109,10 @@ const Hero = () => {
                   Shop Now
                 </Button>
 
-
                 <Link to="/allProducts">
                   <Button
                     size="large"
                     icon={<GiftOutlined />}
-
                     style={{
                       border: '2px solid #e63946',
                       borderRadius: '8px',
@@ -155,8 +163,8 @@ const Hero = () => {
             </Space>
           </Col>
 
-          {/* Right Image */}
-          <Col xs={24} lg={12}>
+          {/* Right Image - Hidden on mobile, shown as background */}
+          <Col xs={0} lg={12}>
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -210,6 +218,80 @@ const Hero = () => {
           </Col>
         </Row>
       </div>
+
+      {/* Mobile Styles */}
+      <style>
+        {`
+          .mobile-bg-image {
+            display: none;
+          }
+
+          @media (max-width: 768px) {
+            .mobile-bg-image {
+              display: block;
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 1;
+              opacity: 0.15;
+            }
+
+            .mobile-bg-image img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              object-position: center;
+            }
+
+            .container {
+              position: relative;
+              z-index: 2;
+            }
+
+            /* Adjust content for better visibility over background image */
+            .ant-row {
+              padding: 20px 15px;
+            }
+
+            .ant-space-vertical {
+              text-align: center;
+            }
+
+            /* Make buttons more prominent */
+            .ant-btn {
+              backdrop-filter: blur(10px);
+              background: rgba(230, 57, 70, 0.9) !important;
+            }
+
+            .ant-btn-default {
+              background: rgba(255, 255, 255, 0.9) !important;
+              color: #e63946 !important;
+            }
+
+            /* Enhance text visibility */
+            h1, p, .ant-tag, .ant-col {
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            }
+          }
+
+          @media (max-width: 480px) {
+            .ant-space-vertical {
+              text-align: center;
+            }
+            
+            .ant-btn {
+              width: 100%;
+              margin-bottom: 10px;
+            }
+            
+            .ant-space {
+              justify-content: center;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

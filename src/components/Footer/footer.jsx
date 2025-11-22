@@ -6,7 +6,8 @@ import {
   Typography,
   Divider,
   Space,
-  Card
+  Card,
+  message
 } from "antd";
 import {
   FacebookFilled,
@@ -22,6 +23,30 @@ import {
 const { Title, Text, Paragraph } = Typography;
 
 const Footer = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handlePhoneClick = () => {
+    // Phone number copy functionality
+    navigator.clipboard.writeText('03457678128');
+    messageApi.success('Phone number copied to clipboard!');
+  };
+
+  const handleEmailClick = () => {
+    // Email copy functionality
+    navigator.clipboard.writeText('Medialyxstore@gmail.com');
+    messageApi.success('Email copied to clipboard!');
+  };
+
+  const handleEmailDirect = () => {
+    // Direct email open
+    window.location.href = 'mailto:Medialyxstore@gmail.com';
+  };
+
+  const handlePhoneDirect = () => {
+    // Direct phone call
+    window.location.href = 'tel:+923457678128';
+  };
+
   return (
     <footer style={{
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)',
@@ -29,6 +54,7 @@ const Footer = () => {
       padding: '40px 0 20px',
       marginTop: 'auto'
     }}>
+      {contextHolder}
       <div className="container">
         <Row gutter={[32, 32]}>
 
@@ -114,16 +140,48 @@ const Footer = () => {
             </Title>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
 
-              {/* Phone */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              {/* Phone - Clickable */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  transition: 'all 0.3s ease'
+                }}
+                className="clickable-contact"
+                onClick={handlePhoneDirect}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handlePhoneClick();
+                }}
+                title="Click to call | Right-click to copy"
+              >
                 <PhoneFilled style={{ color: '#e63946', marginRight: '12px', fontSize: '16px' }} />
                 <Text style={{ color: 'rgba(255,255,255,0.8)' }}>0345 7678128</Text>
               </div>
 
-              {/* Email */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              {/* Email - Clickable */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  transition: 'all 0.3s ease'
+                }}
+                className="clickable-contact"
+                onClick={handleEmailDirect}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handleEmailClick();
+                }}
+                title="Click to email | Right-click to copy"
+              >
                 <MailFilled style={{ color: '#e63946', marginRight: '12px', fontSize: '16px' }} />
-                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>support@medialyx.com</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>Medialyxstore@gmail.com</Text>
               </div>
 
               {/* 24/7 Business Hours */}
@@ -190,6 +248,27 @@ const Footer = () => {
           
           .ant-space a:hover .anticon {
             transform: translateY(-2px);
+          }
+
+          /* Clickable contact items */
+          .clickable-contact:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+          }
+
+          .clickable-contact:active {
+            background: rgba(230, 57, 70, 0.2);
+          }
+
+          /* Mobile responsive adjustments */
+          @media (max-width: 768px) {
+            .clickable-contact {
+              padding: 10px 12px;
+            }
+            
+            .container {
+              padding: 0 16px;
+            }
           }
         `}
       </style>

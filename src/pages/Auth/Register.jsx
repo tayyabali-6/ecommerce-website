@@ -76,11 +76,36 @@ const Register = () => {
       background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)'
     }}>
       {contextHolder}
+      
+      {/* Mobile Header - Only show on mobile */}
+      <div className="mobile-header">
+        <Title
+          level={2}
+          style={{
+            color: 'white',
+            textAlign: 'center',
+            margin: '0',
+            padding: '20px 0 10px 0',
+            fontSize: '24px'
+          }}
+        >
+          Medialyx
+        </Title>
+        <Text style={{
+          color: 'rgba(255,255,255,0.8)',
+          textAlign: 'center',
+          display: 'block',
+          paddingBottom: '10px'
+        }}>
+          Create Your Account
+        </Text>
+      </div>
+
       <Row
         align="middle"
         justify="center"
         style={{
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - 80px)',
           padding: '20px'
         }}
         gutter={0}
@@ -104,13 +129,13 @@ const Register = () => {
               level={1}
               style={{
                 color: 'white',
-                fontSize: '3.5rem',
+                fontSize: '2.5rem',
                 marginBottom: '20px',
                 fontWeight: 700
               }}
             >
               Welcome to
-              <span style={{ color: '#e63946', display: 'block' }}>Our Store</span>
+              <span style={{ color: '#e63946', display: 'block' }}>Medialyx</span>
             </Title>
             <Text style={{
               color: 'rgba(255,255,255,0.8)',
@@ -168,10 +193,11 @@ const Register = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '2rem',
+            padding: '1rem',
           }}
         >
           <Card
+            className="register-card"
             style={{
               width: '100%',
               maxWidth: '480px',
@@ -183,7 +209,8 @@ const Register = () => {
             }}
             bodyStyle={{ padding: '40px' }}
           >
-            <Form layout="vertical" onSubmitCapture={handleSubmit}>
+            {/* Desktop Title - Hidden on mobile */}
+            <div className="desktop-title">
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <Title
                   level={2}
@@ -199,44 +226,36 @@ const Register = () => {
                   Join our community today
                 </Text>
               </div>
+            </div>
 
-              <Row gutter={16}>
-                <Col span={12}>
+            <Form layout="vertical" onSubmitCapture={handleSubmit}>
+              <Row gutter={[12, 8]}>
+                <Col xs={24} sm={12}>
                   <Form.Item
                     required
                     label={<span style={{ color: '#1d3557', fontWeight: '500' }}>First Name</span>}
+                    style={{ marginBottom: '16px' }}
                   >
                     <Input
                       name="fname"
                       onChange={handleChange}
                       prefix={<UserOutlined style={{ color: '#e63946' }} />}
-                      style={{
-                        background: 'white',
-                        border: '2px solid #e6f7ff',
-                        borderRadius: '8px',
-                        color: '#1d3557',
-                        height: '45px'
-                      }}
+                      className="form-input"
                       placeholder="Enter first name"
                     />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
+                <Col xs={24} sm={12}>
                   <Form.Item
                     required
                     label={<span style={{ color: '#1d3557', fontWeight: '500' }}>Last Name</span>}
+                    style={{ marginBottom: '16px' }}
                   >
                     <Input
                       name="lname"
                       onChange={handleChange}
                       prefix={<UserOutlined style={{ color: '#e63946' }} />}
-                      style={{
-                        background: 'white',
-                        border: '2px solid #e6f7ff',
-                        borderRadius: '8px',
-                        color: '#1d3557',
-                        height: '45px'
-                      }}
+                      className="form-input"
                       placeholder="Enter last name"
                     />
                   </Form.Item>
@@ -246,19 +265,14 @@ const Register = () => {
                   <Form.Item
                     required
                     label={<span style={{ color: '#1d3557', fontWeight: '500' }}>Email</span>}
+                    style={{ marginBottom: '16px' }}
                   >
                     <Input
                       name="email"
                       type="email"
                       onChange={handleChange}
                       prefix={<MailOutlined style={{ color: '#e63946' }} />}
-                      style={{
-                        background: 'white',
-                        border: '2px solid #e6f7ff',
-                        borderRadius: '8px',
-                        color: '#1d3557',
-                        height: '45px'
-                      }}
+                      className="form-input"
                       placeholder="Enter your email"
                     />
                   </Form.Item>
@@ -268,18 +282,13 @@ const Register = () => {
                   <Form.Item
                     required
                     label={<span style={{ color: '#1d3557', fontWeight: '500' }}>Password</span>}
+                    style={{ marginBottom: '16px' }}
                   >
                     <Input.Password
                       name="password"
                       onChange={handleChange}
                       prefix={<LockOutlined style={{ color: '#e63946' }} />}
-                      style={{
-                        background: 'white',
-                        border: '2px solid #e6f7ff',
-                        borderRadius: '8px',
-                        color: '#1d3557',
-                        height: '45px'
-                      }}
+                      className="form-input"
                       placeholder="Create a password"
                     />
                   </Form.Item>
@@ -289,18 +298,13 @@ const Register = () => {
                   <Form.Item
                     required
                     label={<span style={{ color: '#1d3557', fontWeight: '500' }}>Confirm Password</span>}
+                    style={{ marginBottom: '16px' }}
                   >
                     <Input.Password
                       name="confirmPassword"
                       onChange={handleChange}
                       prefix={<LockOutlined style={{ color: '#e63946' }} />}
-                      style={{
-                        background: 'white',
-                        border: '2px solid #e6f7ff',
-                        borderRadius: '8px',
-                        color: '#1d3557',
-                        height: '45px'
-                      }}
+                      className="form-input"
                       placeholder="Confirm your password"
                     />
                   </Form.Item>
@@ -313,26 +317,7 @@ const Register = () => {
                     size="large"
                     loading={isProcessing}
                     htmlType="submit"
-                    style={{
-                      background: 'linear-gradient(135deg, #e63946 0%, #1d3557 100%)',
-                      border: 'none',
-                      borderRadius: '12px',
-                      boxShadow: '0 8px 25px rgba(230, 57, 70, 0.4)',
-                      color: 'white',
-                      height: '50px',
-                      fontSize: '16px',
-                      fontWeight: '600',
-                      transition: 'all 0.3s ease',
-                      marginTop: '10px'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 12px 30px rgba(230, 57, 70, 0.6)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(230, 57, 70, 0.4)';
-                    }}
+                    className="submit-button"
                   >
                     {isProcessing ? 'Creating Account...' : 'Create Account'}
                   </Button>
@@ -359,12 +344,145 @@ const Register = () => {
         </Col>
       </Row>
 
-      {/* Mobile View - Single Column */}
+      {/* Mobile View Styling */}
       <style>
         {`
+          /* Mobile Header - Only show on small screens */
+          .mobile-header {
+            display: none;
+          }
+
+          /* Form Input Styles */
+          .form-input {
+            background: white !important;
+            border: 2px solid #e6f7ff !important;
+            border-radius: 12px !important;
+            color: #1d3557 !important;
+            height: 48px !important;
+            font-size: 16px !important;
+          }
+
+          .form-input:focus {
+            border-color: #e63946 !important;
+            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2) !important;
+          }
+
+          /* Submit Button */
+          .submit-button {
+            background: linear-gradient(135deg, #e63946 0%, #1d3557 100%) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.4) !important;
+            color: white !important;
+            height: 50px !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            margin-top: 8px !important;
+          }
+
+          .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(230, 57, 70, 0.6) !important;
+          }
+
+          /* Mobile Styles */
           @media (max-width: 768px) {
+            /* Hide desktop elements on mobile */
             .ant-col-md-0 {
               display: none !important;
+            }
+            
+            .desktop-title {
+              display: none !important;
+            }
+            
+            /* Show mobile header */
+            .mobile-header {
+              display: block !important;
+            }
+            
+            /* Full screen card on mobile */
+            .register-card {
+              max-width: 100% !important;
+              border-radius: 16px !important;
+              margin-top: 10px !important;
+            }
+            
+            .ant-card-body {
+              padding: 24px 20px !important;
+            }
+            
+            /* Tight spacing for mobile */
+            .ant-form-item {
+              margin-bottom: 16px !important;
+            }
+            
+            .ant-row {
+              margin-left: -6px !important;
+              margin-right: -6px !important;
+            }
+            
+            .ant-col {
+              padding-left: 6px !important;
+              padding-right: 6px !important;
+            }
+            
+            /* Adjust main container */
+            main {
+              padding: 0 !important;
+            }
+            
+            .ant-row[align="middle"] {
+              min-height: calc(100vh - 80px) !important;
+              align-items: flex-start !important;
+              padding: 10px !important;
+            }
+            
+            /* Compact inputs */
+            .form-input {
+              height: 46px !important;
+              font-size: 16px !important;
+            }
+            
+            .submit-button {
+              height: 48px !important;
+              font-size: 16px !important;
+              margin-top: 10px !important;
+            }
+          }
+
+          /* Small mobile devices */
+          @media (max-width: 480px) {
+            .ant-card-body {
+              padding: 20px 16px !important;
+            }
+            
+            .mobile-header {
+              padding: 15px 0 5px 0 !important;
+            }
+            
+            .mobile-header .ant-typography {
+              font-size: 20px !important;
+            }
+            
+            .ant-form-item {
+              margin-bottom: 14px !important;
+            }
+            
+            .form-input {
+              height: 44px !important;
+            }
+            
+            .submit-button {
+              height: 46px !important;
+            }
+          }
+
+          /* Tablet adjustments */
+          @media (min-width: 769px) and (max-width: 1024px) {
+            .register-card {
+              max-width: 420px !important;
             }
           }
           
@@ -373,13 +491,8 @@ const Register = () => {
             100% { opacity: 1; transform: translateY(0); }
           }
           
-          .ant-card {
+          .register-card {
             animation: fadeIn 0.8s ease forwards;
-          }
-          
-          .ant-input:focus, .ant-input-password:focus {
-            border-color: #e63946 !important;
-            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2) !important;
           }
         `}
       </style>
