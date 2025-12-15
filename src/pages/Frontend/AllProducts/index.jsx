@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { EyeOutlined, HeartOutlined, StarFilled, FilterOutlined } from "@ant-design/icons";
+import { HeartOutlined, EyeOutlined, StarFilled, ShoppingCartOutlined, FilterOutlined } from "@ant-design/icons";
 import { Button, Card, Row, Col, Select, Spin, Tag, message, Empty } from "antd";
+import { useAuthContext } from "../../../context/Auth";
 
 const { Option } = Select;
 
 const AllProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuthContext();
     const navigate = useNavigate();
+    const [messageApi, contextHolder] = message.useMessage();
 
-    // Backend URL
     const BACKEND_URL = 'https://medialyx-backend-production.up.railway.app';
 
+    // Fetch products from backend
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/products`);
-            const data = await response.json();
-
-            if (data.success) {
-                setProducts(data.products);
-            } else {
-                console.error("Error fetching products:", data.message);
-                message.error("Failed to load products");
-            }
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching products:", error);
-            message.error("Failed to load products");
+            const res = await fetch(`${BACKEND_URL}/api/products`);
+            const data = await res.json();
+            if (data.success) setProducts(data.products);
+            else messageApi.error("Failed to load products");
+        } catch {
+            messageApi.error("Failed to load products");
+        } finally {
             setLoading(false);
         }
     };
@@ -36,44 +33,56 @@ const AllProducts = () => {
         fetchProducts();
     }, []);
 
+    // Sorting products
     const handleSortChange = (value) => {
         const sorted = [...products];
-        if (value === "lowToHigh") {
-            sorted.sort((a, b) => a.price - b.price);
-        } else if (value === "highToLow") {
-            sorted.sort((a, b) => b.price - a.price);
-        }
+        if (value === "lowToHigh") sorted.sort((a, b) => a.price - b.price);
+        else if (value === "highToLow") sorted.sort((a, b) => b.price - a.price);
         setProducts(sorted);
     };
 
-    const handleProductClick = (product) => {
+    // Navigate to product detail
+    const handleProductDetail = (product) => {
         navigate("/productinfo", { state: { product } });
     };
 
-    const handleAddToCart = (product, e) => {
-        e.stopPropagation();
-        message.success(`${product.name || product.title} added to cart!`);
-        // Add your cart logic here
-    };
-
-    const handleAddToWishlist = (product, e) => {
-        e.stopPropagation();
-        message.success("Added to wishlist!");
-        // Add your wishlist logic here
+    // Add product to cart
+    const handleAddToCart = async (product, e) => {
+        e.stopPropagation(); // prevent card click
+        if (!user?.id) {
+            messageApi.error("Please login first to add items to cart");
+            return;
+        }
+        try {
+            const productId = product._id || product.id;
+            const res = await fetch(`${BACKEND_URL}/api/cart/${user.id}/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, quantity: 1 })
+            });
+            const data = await res.json();
+            if (data.success) {
+                messageApi.success("Product added to cart!");
+                setTimeout(() => navigate("/cart"), 500);
+            } else {
+                messageApi.error(data.message || "Failed to add product");
+            }
+        } catch {
+            messageApi.error("Failed to add product");
+        }
     };
 
     return (
         <div style={{ background: "#f8f9fa", minHeight: "100vh" }}>
-            {/* Header Section */}
+            {contextHolder}
+
+            {/* Header */}
             <div className="container pt-5">
-                <Card
-                    className="mb-4 border-0"
-                    style={{
-                        background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                        borderRadius: "16px"
-                    }}
-                >
+                <Card className="mb-4 border-0" style={{
+                    background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                    borderRadius: "16px"
+                }}>
                     <Row align="middle" justify="space-between">
                         <Col>
                             <h1 style={{
@@ -91,13 +100,7 @@ const AllProducts = () => {
                             </p>
                         </Col>
                         <Col>
-                            <Select
-                                defaultValue="featured"
-                                style={{ width: 200 }}
-                                onChange={handleSortChange}
-                                suffixIcon={<FilterOutlined />}
-                                size="large"
-                            >
+                            <Select defaultValue="featured" style={{ width: 200 }} onChange={handleSortChange} suffixIcon={<FilterOutlined />} size="large">
                                 <Option value="featured">Featured</Option>
                                 <Option value="lowToHigh">Price: Low to High</Option>
                                 <Option value="highToLow">Price: High to Low</Option>
@@ -110,267 +113,95 @@ const AllProducts = () => {
             {/* Products Grid */}
             <div className="container pb-5">
                 {loading ? (
-                    <div style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        minHeight: "400px"
-                    }}>
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
                         <Spin size="large" />
                     </div>
                 ) : products.length === 0 ? (
-                    <Empty
-                        description="No products found"
-                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        style={{
-                            margin: "100px 0",
-                            color: "#666"
-                        }}
-                    />
+                    <Empty description="No products found" image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "100px 0", color: "#666" }} />
                 ) : (
                     <Row gutter={[24, 24]}>
-                        {products.map((product, index) => (
-                            <Col
-                                key={product._id || index}
-                                xs={24}
-                                sm={12}
-                                lg={8}
-                                xl={6}
-                            >
-                                <Card
-                                    hoverable
-                                    className="product-card"
-                                    onClick={() => handleProductClick(product)}
-                                    style={{
-                                        border: "none",
-                                        borderRadius: "16px",
-                                        overflow: "hidden",
-                                        transition: "all 0.4s ease",
-                                        background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
-                                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                                        height: "100%"
-                                    }}
-                                    bodyStyle={{
-                                        padding: "0",
-                                        height: "100%",
-                                        display: "flex",
-                                        flexDirection: "column"
-                                    }}
-                                >
-                                    {/* Image Section */}
-                                    <div
-                                        className="image-section position-relative"
+                        {products.map((product) => {
+                            const displayPrice = product.discountPrice || product.price;
+                            const originalPrice = product.discountPrice ? product.price : null;
+
+                            return (
+                                <Col key={product._id} xs={24} sm={12} lg={8} xl={6}>
+                                    <Card
+                                        hoverable
+                                        onClick={() => handleProductDetail(product)}
                                         style={{
-                                            height: "240px",
+                                            borderRadius: 16,
                                             overflow: "hidden",
-                                            background: "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
-                                            position: "relative"
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            height: "100%",
+                                            boxShadow: "0 4px 20px rgba(0,0,0,0.08)"
                                         }}
+                                        bodyStyle={{ padding: 0, display: "flex", flexDirection: "column", height: "100%" }}
                                     >
-                                        <img
-                                            src={product.image || product.productImageUrl}
-                                            alt={product.name || product.title}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "contain",
-                                                transition: "all 0.4s ease",
-                                                // padding: "20px"
-                                            }}
-                                        />
-
-                                        {/* Discount Badge */}
-                                        <Tag
-                                            color="#e63946"
-                                            style={{
-                                                position: "absolute",
-                                                top: "12px",
-                                                left: "12px",
-                                                fontWeight: "bold",
-                                                border: "none",
-                                                fontSize: "12px",
-                                                padding: "4px 8px",
-                                                borderRadius: "12px"
-                                            }}
-                                        >
-                                            -35%
-                                        </Tag>
-
-                                        {/* Action Icons */}
-                                        <div
-                                            className="position-absolute d-flex flex-column gap-2"
-                                            style={{
-                                                top: "12px",
-                                                right: "12px"
-                                            }}
-                                        >
-                                            <Button
-                                                type="text"
-                                                icon={<HeartOutlined />}
-                                                onClick={(e) => handleAddToWishlist(product, e)}
-                                                style={{
-                                                    background: "rgba(255,255,255,0.9)",
-                                                    borderRadius: "50%",
-                                                    width: "36px",
-                                                    height: "36px",
-                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                                    backdropFilter: "blur(10px)",
-                                                    border: "none"
-                                                }}
-                                            />
-                                            <Button
-                                                type="text"
-                                                icon={<EyeOutlined />}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleProductClick(product);
-                                                }}
-                                                style={{
-                                                    background: "rgba(255,255,255,0.9)",
-                                                    borderRadius: "50%",
-                                                    width: "36px",
-                                                    height: "36px",
-                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                                                    backdropFilter: "blur(10px)",
-                                                    border: "none"
-                                                }}
-                                            />
+                                        {/* Image */}
+                                        <div style={{ flex: 1, overflow: "hidden", position: "relative", height: 200 }}>
+                                            <img src={product.image || product.productImageUrl} alt={product.name || product.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                            {originalPrice && (
+                                                <Tag color="#e63946" style={{ position: "absolute", top: 12, left: 12, fontWeight: "bold", borderRadius: 12 }}>
+                                                    -{Math.round((1 - displayPrice / originalPrice) * 100)}%
+                                                </Tag>
+                                            )}
                                         </div>
 
-                                        {/* Hover Overlay */}
-                                        <div
-                                            className="hover-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center"
-                                            style={{
-                                                top: 0,
-                                                left: 0,
-                                                background: "rgba(230, 57, 70, 0.9)",
-                                                opacity: 0,
-                                                transition: "all 0.3s ease"
-                                            }}
-                                        >
-                                            <Button
-                                                type="primary"
-                                                size="large"
-                                                onClick={(e) => handleAddToCart(product, e)}
-                                                style={{
-                                                    background: "white",
-                                                    border: "none",
-                                                    color: "#e63946",
-                                                    borderRadius: "25px",
-                                                    padding: "12px 24px",
-                                                    fontWeight: "600",
-                                                    transform: "translateY(20px)",
-                                                    transition: "all 0.3s ease"
-                                                }}
-                                            >
-                                                Add to Cart
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {/* Product Info Section */}
-                                    <div className="product-info p-4">
-                                        <h6
-                                            className="product-name mb-3"
-                                            style={{
-                                                fontSize: "16px",
-                                                fontWeight: "600",
-                                                lineHeight: "1.4",
-                                                color: "#2d3748",
-                                                minHeight: "44px",
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: "vertical",
-                                                overflow: "hidden"
-                                            }}
-                                        >
-                                            {product.name || product.title}
-                                        </h6>
-
-                                        {/* Price Section */}
-                                        <div
-                                            className="price mb-3 fw-bold"
-                                            style={{
-                                                fontSize: "20px",
-                                                color: "#e63946"
-                                            }}
-                                        >
-                                            Rs {product.price}
-                                        </div>
-
-                                        {/* Rating and Action */}
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <div className="rating d-flex align-items-center">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <StarFilled
-                                                        key={star}
-                                                        style={{
-                                                            fontSize: "14px",
-                                                            color: "#ffd700",
-                                                            marginRight: "2px"
-                                                        }}
-                                                    />
-                                                ))}
-                                                <span
-                                                    className="ms-2"
-                                                    style={{
-                                                        fontSize: "12px",
-                                                        color: "#718096"
-                                                    }}
-                                                >
-                                                    (4.5)
-                                                </span>
+                                        {/* Info */}
+                                        <div style={{ padding: "12px" }}>
+                                            <h6 style={{ fontWeight: 600 }}>{product.name || product.title}</h6>
+                                            <div className="d-flex gap-2 mb-2">
+                                                <span style={{ color: "#e63946", fontWeight: 600 }}>Rs {displayPrice}</span>
+                                                {originalPrice && <span style={{ textDecoration: "line-through", color: "#888" }}>Rs {originalPrice}</span>}
                                             </div>
 
-                                            {/* <Button
+                                            {/* Rating */}
+                                            <div className="d-flex mb-3">
+                                                {[1, 2, 3, 4, 5].map((i) => (<StarFilled key={i} style={{ color: "#ffd700", fontSize: 12, marginRight: 2 }} />))}
+                                                <span style={{ fontSize: 12, color: "#718096" }}>(128)</span>
+                                            </div>
+
+                                            {/* Add to Cart Button */}
+                                            <Button
                                                 type="primary"
-                                                size="small"
-                                                onClick={(e) => handleAddToCart(product, e)}
+                                                icon={<ShoppingCartOutlined />}
+                                                onClick={(e) => handleAddToCart(item, e)}
                                                 style={{
+                                                    borderRadius: 24,
                                                     background: "#e63946",
                                                     border: "none",
-                                                    borderRadius: "20px",
-                                                    fontWeight: "500",
-                                                    fontSize: "12px",
-                                                    padding: "6px 16px"
+                                                    fontWeight: 600,
+                                                    fontSize: 14,
+                                                    padding: "8px 20px",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    gap: 6,
+                                                    cursor: "pointer",
+                                                    transition: "all 0.3s ease"
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.transform = "scale(1.05)";
+                                                    e.currentTarget.style.boxShadow = "0 6px 18px rgba(230,57,70,0.4)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.transform = "scale(1)";
+                                                    e.currentTarget.style.boxShadow = "none";
                                                 }}
                                             >
-                                                Add to Cart
-                                            </Button> */}
+                                                Add
+                                            </Button>
                                         </div>
-                                    </div>
-                                </Card>
-                            </Col>
-                        ))}
+                                    </Card>
+                                </Col>
+                            );
+                        })}
                     </Row>
                 )}
             </div>
-
-            {/* Custom Styles */}
-            <style jsx>{`
-                .product-card:hover {
-                    transform: translateY(-8px) !important;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
-                }
-                
-                .image-section:hover img {
-                    transform: scale(1.08) !important;
-                }
-                
-                .product-card:hover .hover-overlay {
-                    opacity: 1 !important;
-                }
-                
-                .product-card:hover .hover-overlay button {
-                    transform: translateY(0) !important;
-                }
-                
-                @media (max-width: 576px) {
-                    .image-section {
-                        height: 200px !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 };

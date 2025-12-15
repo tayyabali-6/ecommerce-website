@@ -1,14 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Typography,
-  Divider,
-  Space,
-  Card,
-  message
-} from "antd";
+import { Row, Col, Typography, Divider, Space, Card, message, Button } from "antd";
 import {
   FacebookFilled,
   InstagramFilled,
@@ -26,203 +18,79 @@ const Footer = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handlePhoneClick = () => {
-    // Phone number copy functionality
     navigator.clipboard.writeText('03457678128');
-    messageApi.success('Phone number copied to clipboard!');
+    messageApi.success('Phone number copied!');
   };
 
   const handleEmailClick = () => {
-    // Email copy functionality
     navigator.clipboard.writeText('Medialyxstore@gmail.com');
-    messageApi.success('Email copied to clipboard!');
+    messageApi.success('Email copied!');
   };
 
-  const handleEmailDirect = () => {
-    // Direct email open
-    window.location.href = 'mailto:Medialyxstore@gmail.com';
-  };
-
-  const handlePhoneDirect = () => {
-    // Direct phone call
-    window.location.href = 'tel:+923457678128';
-  };
+  const handlePhoneDirect = () => window.location.href = 'tel:+923457678128';
+  const handleEmailDirect = () => window.location.href = 'mailto:Medialyxstore@gmail.com';
 
   return (
-    <footer style={{
-      background: 'linear-gradient(135deg, #1d3557 0%, #457b9d 100%)',
-      color: 'white',
-      padding: '40px 0 20px',
-      marginTop: 'auto'
-    }}>
+    <footer style={{ background: "#0d1b2a", color: "white", padding: "60px 20px 30px", marginTop: "auto" }}>
       {contextHolder}
       <div className="container">
-        <Row gutter={[32, 32]}>
-
-          {/* MediaLyx Brand Section */}
-          <Col xs={24} md={8}>
-            <Space direction="vertical" size="middle">
-              <Title level={3} style={{ color: '#e63946', margin: 0 }}>
-                <ShopFilled style={{ marginRight: '8px' }} />
-                MediaLyx
+        <Row gutter={[32, 32]} justify="start" align="top">
+          {/* Brand */}
+          <Col xs={24} sm={24} md={8} style={{ textAlign: 'left' }}>
+            <Space direction="vertical" size="middle" style={{ width: "100%", alignItems: 'flex-start' }}>
+              <Title level={3} style={{ background: "linear-gradient(90deg, #e63946, #f77f00)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", margin: 0 }}>
+                <ShopFilled style={{ marginRight: "8px",color:"white" }} /> MediaLyx
               </Title>
-              <Paragraph style={{ color: 'rgba(255,255,255,0.8)', margin: 0, lineHeight: '1.6' }}>
-                Your premier destination for quality products. Experience seamless
-                24/7 online shopping with MediaLyx.
+              <Paragraph style={{ color: "rgba(255,255,255,0.85)", lineHeight: "1.6", margin: 0 }}>
+                Your premier destination for quality products. Seamless 24/7 online shopping with MediaLyx.
               </Paragraph>
-
-              <Space size="middle">
-                <a href="#" style={{ color: 'white', fontSize: '20px' }}>
-                  <FacebookFilled />
-                </a>
-                <a href="#" style={{ color: 'white', fontSize: '20px' }}>
-                  <InstagramFilled />
-                </a>
-                <a href="#" style={{ color: 'white', fontSize: '20px' }}>
-                  <TwitterOutlined />
-                </a>
-              </Space>
             </Space>
           </Col>
 
           {/* Quick Links */}
-          <Col xs={24} md={8}>
-            <Title level={5} style={{ color: '#e63946', marginBottom: '16px' }}>
-              Quick Links
-            </Title>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Link
-                to="/"
-                style={{
-                  color: 'rgba(255,255,255,0.8)',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}
-              >
-                Home
-              </Link>
-              <Link
-                to="/allProducts"
-                style={{
-                  color: 'rgba(255,255,255,0.8)',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}
-              >
-                All Products
-              </Link>
-              <Link
-                to="/cart"
-                style={{
-                  color: 'rgba(255,255,255,0.8)',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}
-              >
-                Shopping Cart
-              </Link>
-              <Link
-                to="/about"
-                style={{
-                  color: 'rgba(255,255,255,0.8)',
-                  textDecoration: 'none',
-                  display: 'block'
-                }}
-              >
-                About Us
-              </Link>
+          <Col xs={24} sm={12} md={8} style={{ textAlign: 'left' }}>
+            <Title level={5} style={{ color: "#e63946", marginBottom: "16px" }}>Quick Links</Title>
+            <Space direction="vertical" style={{ width: "100%", alignItems: 'flex-start' }}>
+              <Link to="/" className="footer-link">Home</Link>
+              <Link to="/allProducts" className="footer-link">All Products</Link>
+              <Link to="/cart" className="footer-link">Shopping Cart</Link>
+              <Link to="/about" className="footer-link">About Us</Link>
             </Space>
           </Col>
 
           {/* Contact & Support */}
-          <Col xs={24} md={8}>
-            <Title level={5} style={{ color: '#e63946', marginBottom: '16px' }}>
-              Contact & Support
-            </Title>
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Col xs={24} sm={12} md={8} style={{ textAlign: 'left' }}>
+            <Title level={5} style={{ color: "#e63946", marginBottom: "16px" }}>Contact & Support</Title>
+            <Space direction="vertical" size="middle" style={{ width: '100%', alignItems: 'flex-start' }}>
+              <Button type="text" className="contact-btn" icon={<PhoneFilled style={{ color: "#e63946", fontSize: 16 }} />} onClick={handlePhoneDirect} onContextMenu={(e) => { e.preventDefault(); handlePhoneClick(); }}>
+                <Text style={{ color: "white" }}>0345 7678128</Text>
+              </Button>
 
-              {/* Phone - Clickable */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  transition: 'all 0.3s ease'
-                }}
-                className="clickable-contact"
-                onClick={handlePhoneDirect}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  handlePhoneClick();
-                }}
-                title="Click to call | Right-click to copy"
-              >
-                <PhoneFilled style={{ color: '#e63946', marginRight: '12px', fontSize: '16px' }} />
-                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>0345 7678128</Text>
-              </div>
+              <Button type="text" className="contact-btn" icon={<MailFilled style={{ color: "#e63946", fontSize: 16 }} />} onClick={handleEmailDirect} onContextMenu={(e) => { e.preventDefault(); handleEmailClick(); }}>
+                <Text style={{ color: "white" }}>Medialyxstore@gmail.com</Text>
+              </Button>
 
-              {/* Email - Clickable */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  transition: 'all 0.3s ease'
-                }}
-                className="clickable-contact"
-                onClick={handleEmailDirect}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  handleEmailClick();
-                }}
-                title="Click to email | Right-click to copy"
-              >
-                <MailFilled style={{ color: '#e63946', marginRight: '12px', fontSize: '16px' }} />
-                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>Medialyxstore@gmail.com</Text>
-              </div>
 
-              {/* 24/7 Business Hours */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <ClockCircleFilled style={{ color: '#e63946', marginRight: '12px', fontSize: '16px' }} />
-                <Text style={{ color: 'rgba(255,255,255,0.8)' }}>24/7 Open</Text>
-              </div>
-
-              {/* Trust Badge */}
-              <Card
-                size="small"
-                style={{
-                  background: 'rgba(230, 57, 70, 0.1)',
-                  border: '1px solid rgba(230, 57, 70, 0.3)',
-                  marginTop: '8px'
-                }}
-                bodyStyle={{ padding: '8px 12px' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <SafetyCertificateFilled style={{ color: '#e63946', marginRight: '8px' }} />
-                  <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px' }}>
-                    Secure & Trusted Shopping
-                  </Text>
+              <Card size="small" style={{ background: "rgba(230,57,70,0.1)", border: "1px solid rgba(230,57,70,0.3)", marginTop: "8px", width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: 'flex-start' }}>
+                  <SafetyCertificateFilled style={{ color: "#e63946" }} />
+                  <Text style={{ color: "white", fontSize: 12 }}>Secure & Trusted Shopping</Text>
                 </div>
               </Card>
             </Space>
           </Col>
-
         </Row>
 
-        {/* Divider */}
-        <Divider style={{ borderColor: 'rgba(255,255,255,0.2)', margin: '32px 0 24px' }} />
+        <Divider style={{ borderColor: "rgba(255,255,255,0.2)", margin: "32px 0 24px" }} />
 
-        {/* Copyright Section */}
-        <Row justify="center" align="middle">
+        {/* Copyright */}
+        <Row justify="start" align="middle">
           <Col>
-            <Space direction="vertical" size="small" align="center">
-              <Text style={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center' }}>
-                &copy; {new Date().getFullYear()} <strong style={{ color: '#e63946' }}>MediaLyx</strong>. All rights reserved.
+            <Space direction="vertical" size="small" align="start">
+              <Text style={{ color: "rgba(255,255,255,0.7)" }}>
+                &copy; {new Date().getFullYear()} <strong style={{ color: "#e63946" }}>MediaLyx</strong>. All rights reserved.
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', textAlign: 'center' }}>
+              <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
                 Designed for exceptional 24/7 shopping experience
               </Text>
             </Space>
@@ -230,45 +98,47 @@ const Footer = () => {
         </Row>
       </div>
 
-      {/* Hover Effects */}
       <style>
         {`
-          footer a {
+          .footer-link {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            display: block;
             transition: all 0.3s ease;
           }
-          
-          footer a:hover {
-            color: #e63946 !important;
-            transform: translateX(5px);
-          }
-          
-          .ant-space .anticon {
-            transition: all 0.3s ease;
-          }
-          
-          .ant-space a:hover .anticon {
-            transform: translateY(-2px);
-          }
-
-          /* Clickable contact items */
-          .clickable-contact:hover {
-            background: rgba(255, 255, 255, 0.1);
+          .footer-link:hover {
+            color: #f77f00 !important;
             transform: translateX(5px);
           }
 
-          .clickable-contact:active {
-            background: rgba(230, 57, 70, 0.2);
+          .social-icon {
+            color: white;
+            font-size: 20px;
+            transition: all 0.3s ease;
+          }
+          .social-icon:hover {
+            color: #f77f00;
+            transform: scale(1.2);
           }
 
-          /* Mobile responsive adjustments */
+          .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            justify-content: flex-start;
+          }
+          .contact-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(4px);
+          }
+
           @media (max-width: 768px) {
-            .clickable-contact {
-              padding: 10px 12px;
-            }
-            
-            .container {
-              padding: 0 16px;
-            }
+            .container { padding: 0 16px; }
+            .contact-btn { justify-content: flex-start; }
           }
         `}
       </style>

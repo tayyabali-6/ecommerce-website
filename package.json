@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
     "antd": "^5.25.4",
+    "aos": "^2.3.4",
     "bootstrap": "^5.3.6",
     "date-fns": "^4.1.0",
     "firebase": "^11.8.1",
